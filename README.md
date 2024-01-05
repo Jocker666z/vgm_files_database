@@ -1,4 +1,4 @@
-This little project was born with the aim of giving personalised information to the glouglou music player. Many formats give little or no information about the files being played.
+This little project was born with the aim of giving personalised information to glouglou music player (https://github.com/Jocker666z/glouglou). Many formats give little or no information about the files being played.
 
 ## Usage
 ```
