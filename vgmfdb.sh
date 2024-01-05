@@ -495,6 +495,7 @@ for file in "${lst_vgm[@]}"; do
 		tag_force
 		db_force_update_album "$tag_id"
 		db_force_update_artist "$tag_id"
+		echo "updated        : $tag_path"
 
 	fi
 

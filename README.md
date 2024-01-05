@@ -1,4 +1,6 @@
-# Usage
+This little project was born with the aim of giving personalised information to the glouglou music player. Many formats give little or no information about the files being played.
+
+## Usage
 ```
                                    Without option inplace recursively add files in db.
   -h|--help                        Display this help.
@@ -13,7 +15,12 @@
 ## Install & update
 `curl https://raw.githubusercontent.com/Jocker666z/vgm_files_database/main/vgmfdb.sh > /home/$USER/.local/bin/glougvgmfdblou && chmod +rx /home/$USER/.local/bin/vgmfdb`
 
-# db SPEC
+## Supported Files
+
+* `2sf|gsf|dsf|psf|psf2|mini2sf|minigsf|minipsf|minipsf2|minissf|miniusf|minincsf|ncsf|ssf|usf`
+* `vgm|vgz`
+
+## db SPEC
 Database location = `/home/$USER/.config/vgmfdb/vgm.db`
 Table = `VGM`
 Table column :
