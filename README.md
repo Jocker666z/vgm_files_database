@@ -21,19 +21,19 @@ This little project was born with the aim of giving personalised information to 
 * `vgm|vgz`
 
 ## db SPEC
-Database location = `/home/$USER/.config/vgmfdb/vgm.db`
-Table = `VGM`
-Table column :
-* id = TEXT; sha256sum of file path+size+timestamp
-* path = TEXT; absolute path of file
-* title = TEXT; tag title
-* artist = TEXT; tag artist
-* album = TEXT; tag album
-* type = TEXT; file extension, in uppercase
-* size = INTEGER; size of file in bytes (wc -c)
-* frequency = INTEGER; frequency of file in Hz
-* duration = INTEGER; total duration of file in second
-* system = TEXT; original system or file info
-* timestamp = TEXT; timestamp of file since Epoch (date -r FILE "+%s")
-* add_date = TEXT; date of addition in database since Epoch $(date "+%s")
-* tag_forced = INTEGER; internal use, for forced/update manipulation
+* Database location = `/home/$USER/.config/vgmfdb/vgm.db`
+* Table = `VGM`
+* Table column :
+	* id = TEXT; sha256sum of file path+size+timestamp
+	* path = TEXT; absolute path of file
+	* title = TEXT; tag title
+	* artist = TEXT; tag artist
+	* album = TEXT; tag album
+	* type = TEXT; file extension, in uppercase
+	* size = INTEGER; size of file in bytes (wc -c)
+	* frequency = INTEGER; frequency of file in Hz
+	* duration = INTEGER; total duration of file in second
+	* system = TEXT; original system or file info
+	* timestamp = TEXT; timestamp of file since Epoch (date -r FILE "+%s")
+	* add_date = TEXT; date of addition in database since Epoch $(date "+%s")
+	* tag_forced = INTEGER; internal use, for forced/update manipulation
