@@ -1,4 +1,4 @@
-This little project was born with the aim of giving personalised information to glouglou music player (https://github.com/Jocker666z/glouglou). Many formats give little or no information about the files being played.
+This little project was born with the aim of giving personalised information to glouglou music player (https://github.com/Jocker666z/glouglou). In fact, many formats give little or no information about the files being played.
 
 ## Usage
 ```
@@ -13,7 +13,7 @@ This little project was born with the aim of giving personalised information to 
 ```
 
 ## Install & update
-`curl https://raw.githubusercontent.com/Jocker666z/vgm_files_database/main/vgmfdb.sh > /home/$USER/.local/bin/glougvgmfdblou && chmod +rx /home/$USER/.local/bin/vgmfdb`
+`curl https://raw.githubusercontent.com/Jocker666z/vgm_files_database/main/vgmfdb.sh > /home/$USER/.local/bin/vgmfdb && chmod +rx /home/$USER/.local/bin/vgmfdb`
 
 ## Supported Files
 
