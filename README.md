@@ -22,7 +22,7 @@ This little project was born with the aim of giving personalised information to 
 
 ## db SPEC
 * Database location = `/home/$USER/.config/vgmfdb/vgm.db`
-* Table = `VGM`
+* Table = `vgm`
 * Table column :
 	* id = TEXT; sha256sum of file path+size+timestamp
 	* path = TEXT; absolute path of file
