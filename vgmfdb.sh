@@ -17,6 +17,13 @@ system_bin_location=$(command -v $bin_name)
 if [[ -n "$system_bin_location" ]]; then
 	vgm_tag_bin="$system_bin_location"
 fi
+
+# xxd
+bin_name="xxd"
+system_bin_location=$(command -v $bin_name)
+if [[ -n "$system_bin_location" ]]; then
+	xxd_bin="$system_bin_location"
+fi
 }
 config() {
 if [[ ! -d "$vgmfdb_config_dir" ]] && [[ -w "/home/$USER/.config/" ]]; then
@@ -407,6 +414,37 @@ if [[ -n "$tag_forced_artist" ]]; then
 	tag_artist="$tag_forced_artist"
 fi
 }
+tag_spc() {
+local ext
+local spc_duration
+local spc_fading
+ext="$1"
+
+if [[ ${ext_spc} =~ $ext ]]  \
+&& [[ -n "$xxd_bin" ]]; then
+	# file tags
+	tag_title=$("$xxd_bin" -ps -s 0x0002Eh -l 32 "$file" \
+				| tr -d '[:space:]' | xxd -r -p | tr -d '\0')
+	tag_artist=$("$xxd_bin" -ps -s 0x000B1h -l 32 "$file" \
+				| tr -d '[:space:]' | xxd -r -p | tr -d '\0')
+	tag_album=$("$xxd_bin" -ps -s 0x0004Eh -l 32 "$file" \
+				| tr -d '[:space:]' | xxd -r -p | tr -d '\0')
+	tag_frequency="32000"
+	spc_duration=$(xxd -ps -s 0x000A9h -l 3 "$file" \
+					| xxd -r -p | tr -d '\0')
+	spc_fading=$(xxd -ps -s 0x000ACh -l 5 "$file" \
+				| xxd -r -p | tr -d '\0')
+	# Correction if empty, or not an integer
+	if [[ -z "$spc_duration" ]] || ! [[ "$spc_duration" =~ ^[0-9]*$ ]]; then
+		spc_duration="0"
+	fi
+	if [[ -z "$spc_fading" ]] || ! [[ "$spc_fading" =~ ^[0-9]*$ ]]; then
+		spc_fading="0"
+	fi
+	spc_fading=$((spc_fading/1000))
+	tag_duration=$((spc_duration+spc_fading))
+fi
+}
 tag_vgm() {
 local ext
 ext="$1"
@@ -473,6 +511,7 @@ for file in "${lst_vgm[@]}"; do
 		tag_type="${ext^^}"
 
 		# file tags
+		tag_spc "$ext"
 		tag_vgm "$ext"
 		tag_xsf "$ext"
 		# Add missing tags
@@ -566,9 +605,11 @@ temp_cache_tags=$(mktemp)
 # Default in db
 tag_forced="0"
 
+ext_spc="spc"
 ext_vgm="vgm|vgz"
 ext_xsf="2sf|dsf|psf|psf2|mini2sf|minipsf|minipsf2|minissf|miniusf|minincsf|ncsf|ssf|usf"
-ext_all_raw="${ext_vgm}| \
+ext_all_raw="${ext_spc}| \
+			 ${ext_vgm}| \
 			 ${ext_xsf}"
 ext_all=$(echo "${ext_all_raw//[[:blank:]]/}" | tr -s '|')
 

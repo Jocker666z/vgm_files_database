@@ -1,4 +1,4 @@
-This little project was born with the aim of giving personalised information to glouglou music player (https://github.com/Jocker666z/glouglou). In fact, many formats give little or no information about the files being played.
+This little project was born with the aim of giving personalised information to glouglou music player (https://github.com/Jocker666z/glouglou), but it can also be used in any way you like. In fact, many formats give little or no information about the files being played.
 
 ## Usage
 ```
@@ -18,6 +18,7 @@ This little project was born with the aim of giving personalised information to 
 ## Supported Files
 
 * `2sf|gsf|dsf|psf|psf2|mini2sf|minigsf|minipsf|minipsf2|minissf|miniusf|minincsf|ncsf|ssf|usf`
+* `spc`
 * `vgm|vgz`
 
 ## db SPEC
