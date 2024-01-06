@@ -45,6 +45,8 @@ By default the tags are taken with the filename and the directory that contains 
 	* `it|mod|mo3|mptm|s3m|stm|stp|plm|umx|xm`
 * Tracker (xmp supported files):
 	* `669|amf|dbm|digi|dsm|dsym|far|gz|mdl|musx|psm`
+* ZX Spectrum:
+	* `asc|psc|pt1|pt2|pt3|sqt|stc|stp|tap|zxs`
 
 ## db SPEC
 * Database location = `/home/$USER/.config/vgmfdb/vgm.db`
