@@ -642,7 +642,7 @@ ext_vgmstream_0_c="22k|8svx|acb|acm|ad|ads|adp|adpcm|adx|aix|akb|asf|apc|at3|at9
 ext_vgmstream_d_n="dsm|dsp|dvi|fsb|gcm|genh|h4m|hca|hps|ifs|imc|int|isd|ivs|kma|kvs|lac3|lbin|lmp3|logg|lopus|lstm|lwav|mab|mca|mic|msf|mus|musx|nlsd|nop|npsf"
 ext_vgmstream_o_z="oma|ras|rsd|rsnd|rws|sad|scd|sgd|ss2|str|strm|svag|p04|p16|pcm|psb|thp|trk|trs|txtp|ulw|vag|vas|vgmstream|voi|wem|xa|xai|xma|xnb|xwv"
 ext_vgmstream="${ext_vgmstream_0_c}|${ext_vgmstream_d_n}|${ext_vgmstream_o_z}"
-ext_xsf="2sf|dsf|psf|psf2|mini2sf|minipsf|minipsf2|minissf|miniusf|minincsf|ncsf|ssf|usf"
+ext_xsf="2sf|dsf|gsf|psf|psf2|mini2sf|minigsf|minipsf|minipsf2|minissf|miniusf|minincsf|ncsf|ssf|usf"
 ext_all_raw="${ext_spc}| \
 			 ${ext_vgm}| \
 			 ${ext_vgmstream}| \
