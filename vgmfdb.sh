@@ -10,12 +10,20 @@
 bin() {
 local bin_name
 local system_bin_location
+local system_bin_location_bis
 
 # vgm_tag
 bin_name="vgm_tag"
 system_bin_location=$(command -v $bin_name)
 if [[ -n "$system_bin_location" ]]; then
 	vgm_tag_bin="$system_bin_location"
+fi
+ 
+# vgmstream-cli
+bin_name="vgmstream-cli"
+system_bin_location=$(command -v $bin_name)
+if [[ -n "$system_bin_location" ]]; then
+	vgmstream_cli_bin="$system_bin_location"
 fi
 
 # xxd
@@ -467,6 +475,28 @@ if [[ ${ext_vgm} =~ $ext ]]  \
 				| awk '{$1=$1}1')
 fi
 }
+tag_vgmstream() {
+local ext
+local sample_duration
+ext="$1"
+
+if [[ ${ext_vgmstream} =~ $ext ]]  \
+&& [[ -n "$vgmstream_cli_bin" ]]; then
+	# Get file tags
+	"$vgmstream_cli_bin" -m "$file" > "$temp_cache_tags"
+
+	# file tags
+	tag_system=$(sed -n 's/encoding:/&\n/;s/.*\n//p' "$temp_cache_tags" \
+				| awk '{$1=$1}1')
+	# Duration
+	sample_duration=$(< "$temp_cache_tags" grep "play duration:" \
+						| awk '{print $3}')
+	tag_frequency=$(< "$temp_cache_tags" grep "sample rate:" \
+					| awk '{print $3}')
+	tag_duration=$(echo "scale=4;$sample_duration/$tag_frequency" \
+						| bc | awk '{print int($1+0.5)}')
+fi
+}
 tag_xsf() {
 local ext
 ext="$1"
@@ -513,6 +543,7 @@ for file in "${lst_vgm[@]}"; do
 		# file tags
 		tag_spc "$ext"
 		tag_vgm "$ext"
+		tag_vgmstream "$ext"
 		tag_xsf "$ext"
 		# Add missing tags
 		tag_default "$file"
@@ -607,9 +638,14 @@ tag_forced="0"
 
 ext_spc="spc"
 ext_vgm="vgm|vgz"
+ext_vgmstream_0_c="22k|8svx|acb|acm|ad|ads|adp|adpcm|adx|aix|akb|asf|apc|at3|at9|awb|bcstm|bcwav|bfstm|bfwav|bik|brstm|bwav|cfn|ckd|cmp|csb|csmp|cps"
+ext_vgmstream_d_n="dsm|dsp|dvi|fsb|gcm|genh|h4m|hca|hps|ifs|imc|int|isd|ivs|kma|kvs|lac3|lbin|lmp3|logg|lopus|lstm|lwav|mab|mic|msf|mus|musx|nlsd|nop|npsf"
+ext_vgmstream_o_z="oma|ras|rsd|rsnd|rws|sad|scd|sgd|ss2|str|strm|svag|p04|p16|pcm|psb|thp|trk|trs|txtp|ulw|vag|vas|vgmstream|voi|wem|xa|xai|xma|xnb|xwv"
+ext_vgmstream="${ext_vgmstream_0_c}|${ext_vgmstream_d_n}|${ext_vgmstream_o_z}"
 ext_xsf="2sf|dsf|psf|psf2|mini2sf|minipsf|minipsf2|minissf|miniusf|minincsf|ncsf|ssf|usf"
 ext_all_raw="${ext_spc}| \
 			 ${ext_vgm}| \
+			 ${ext_vgmstream}| \
 			 ${ext_xsf}"
 ext_all=$(echo "${ext_all_raw//[[:blank:]]/}" | tr -s '|')
 
