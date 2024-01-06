@@ -15,6 +15,16 @@ This little project was born with the aim of giving personalised information to 
 ## Install & update
 `curl https://raw.githubusercontent.com/Jocker666z/vgm_files_database/main/vgmfdb.sh > /home/$USER/.local/bin/vgmfdb && chmod +rx /home/$USER/.local/bin/vgmfdb`
 
+## Tags read
+By default the tags are taken with the filename and the directory that contains them. For more precision you will have to install the dependencies below.
+
+* `info68`: https://sourceforge.net/projects/sc68/
+* `openmpt123`: present in many official repositories
+* `vgm_tag`: https://github.com/vgmrips/vgmtools
+* `vgmstream-cli`: https://vgmstream.org/
+* `xmp`: present in many official repositories
+* `xxd`: present in many official repositories
+
 ## Supported Files
 
 * Atari 8-bits
