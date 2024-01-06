@@ -17,6 +17,8 @@ This little project was born with the aim of giving personalised information to 
 
 ## Supported Files
 
+* Atari 8-bits
+	* `sap`
 * Atari ST & Amiga
 	* `sc68|snd|sndh`
 * Commodore

@@ -10,7 +10,6 @@
 bin() {
 local bin_name
 local system_bin_location
-local system_bin_location_bis
 
 # info68
 bin_name="info68"
@@ -436,24 +435,20 @@ if [[ -n "$tag_forced_artist" ]]; then
 	tag_artist="$tag_forced_artist"
 fi
 }
-tag_sid() {
+tag_sap() {
 local ext
 ext="$1"
 
-if [[ "$ext" = "sid" ]] \
-&& [[ -n "$xxd_bin" ]]; then
+if [[ ${ext_sap} =~ $ext ]]; then
+	# Get file tags
+	strings -e S "$file" | head -15 > "$temp_cache_tags"
+
 	# file tags
-	tag_artist=$("$xxd_bin" -ps -s 0x36 -l 32 "$file" \
-			| tr -d '[:space:]' | xxd -r -p | tr -d '\0' \
-			| iconv -f latin1 -t ascii//TRANSLIT \
-			| awk '{$1=$1}1')
+	tag_artist=$(< "$temp_cache_tags" grep -i -a "AUTHOR" | awk -F'"' '$0=$2')
 	if [[ "$tag_artist" = "<?>" ]]; then
 		unset tag_artist
 	fi
-	tag_album=$("$xxd_bin" -ps -s 0x16 -l 32 "$file" \
-			| tr -d '[:space:]' | xxd -r -p | tr -d '\0' \
-			| iconv -f latin1 -t ascii//TRANSLIT \
-			| awk '{$1=$1}1')
+	tag_album=$(< "$temp_cache_tags" grep -i -a "NAME" | awk -F'"' '$0=$2')
 	if [[ "$tag_album" = "<?>" ]]; then
 		unset tag_album
 	fi
@@ -487,7 +482,29 @@ if [[ ${ext_sc68} =~ $ext ]] \
 		|| [[ "$tag_artist" = "N/A" ]]; then
 			unset tag_artist
 		fi
+	fi
+fi
+}
+tag_sid() {
+local ext
+ext="$1"
 
+if [[ "$ext" = "sid" ]] \
+&& [[ -n "$xxd_bin" ]]; then
+	# file tags
+	tag_artist=$("$xxd_bin" -ps -s 0x36 -l 32 "$file" \
+			| tr -d '[:space:]' | xxd -r -p | tr -d '\0' \
+			| iconv -f latin1 -t ascii//TRANSLIT \
+			| awk '{$1=$1}1')
+	if [[ "$tag_artist" = "<?>" ]]; then
+		unset tag_artist
+	fi
+	tag_album=$("$xxd_bin" -ps -s 0x16 -l 32 "$file" \
+			| tr -d '[:space:]' | xxd -r -p | tr -d '\0' \
+			| iconv -f latin1 -t ascii//TRANSLIT \
+			| awk '{$1=$1}1')
+	if [[ "$tag_album" = "<?>" ]]; then
+		unset tag_album
 	fi
 fi
 }
@@ -607,8 +624,10 @@ local ext
 ext="$1"
 
 if [[ ${ext_xsf} =~ $ext ]]; then
+	# Get file tags
 	strings -e S "$file" | sed -n '/TAG/,$p' > "$temp_cache_tags"
 
+	# file tags
 	tag_title=$(< "$temp_cache_tags" grep -i -a title= | awk -F'=' '$0=$NF')
 	tag_artist=$(< "$temp_cache_tags" grep -i -a artist= | awk -F'=' '$0=$NF')
 	tag_album=$(< "$temp_cache_tags" grep -i -a game= | awk -F'=' '$0=$NF')
@@ -616,7 +635,6 @@ if [[ ${ext_xsf} =~ $ext ]]; then
 					| awk -F '.' 'NF > 1 { printf "%s", $1; exit } 1' \
 					| awk -F":" '{ print ($1 * 60) + $2 }' \
 					| tr -d '[:space:]')
-
 fi
 }
 
@@ -644,6 +662,7 @@ for file in "${lst_vgm[@]}"; do
 		# file tags
 		tag_sid "$ext"
 		tag_sc68 "$ext"
+		tag_sap "$ext"
 		tag_spc "$ext"
 		tag_vgm "$ext"
 		tag_vgmstream "$ext"
@@ -745,6 +764,7 @@ tag_forced="0"
 
 ext_c64="sid|prg"
 ext_sc68="sc68|snd|sndh"
+ext_sap="sap"
 ext_spc="spc"
 ext_vgm="vgm|vgz"
 ext_vgmstream_0_c="22k|8svx|acb|acm|ad|ads|adp|adpcm|adx|aix|akb|asf|apc|at3|at9|awb|bcstm|bcwav|bfstm|bfwav|bik|brstm|bwav|cfn|ckd|cmp|csb|csmp|cps"
@@ -755,6 +775,7 @@ ext_xmp="669|amf|dbm|digi|dsm|dsym|far|gz|mdl|musx|psm"
 ext_xsf="2sf|dsf|gsf|psf|psf2|mini2sf|minigsf|minipsf|minipsf2|minissf|miniusf|minincsf|ncsf|ssf|usf"
 ext_all_raw="${ext_c64}| \
 			 ${ext_sc68}| \
+			 ${ext_sap}| \
 			 ${ext_spc}| \
 			 ${ext_vgm}| \
 			 ${ext_vgmstream}| \
