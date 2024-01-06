@@ -68,8 +68,15 @@ error_label="$1"
 echo "${error_label}" >&2
 }
 kill () {
+local time_formated
+
 # Print stats
-echo "Total duration of operation is ${SECONDS}s".
+if [[ "${SECONDS}" -gt "120" ]]; then
+	time_formated="$((SECONDS/3600))h$((SECONDS%3600/60))m$((SECONDS%60))s"
+	echo "Total duration of operation is ${time_formated}".
+else
+	echo "Total duration of operation is ${SECONDS}s".
+fi
 
 rm "$temp_cache_tags" &>/dev/null
 stty sane
@@ -189,6 +196,11 @@ EOF
 db_purge() {
 local row_removed
 local input_realpath
+local vgm_tested
+local vgm_removed
+
+vgm_tested="0"
+vgm_removed="0"
 
 # Regenerate db_id
 db_id
@@ -204,10 +216,26 @@ for value in "${clear_id_lst[@]}"; do
 		input_realpath=$(realpath "$input")
 		test_path=$(echo "$row_removed" | grep "$input_realpath")
 		if [[ -n "$test_path" ]]; then
+			# Remove in db
 			sqlite3 "$vgmfdb_database" "DELETE FROM vgm WHERE id = '${value}'"
-			echo "Removed from db : $row_removed"
+			# For print
+			vgm_removed=$(( vgm_removed + 1 ))
 			continue 2
 		fi
+
+		# For print
+		vgm_tested=$(( vgm_tested + 1 ))
+
+		# Print
+		tput bold sitm
+		echo -e "  Purge; test file in db   \u2933 $vgm_tested"/"${#clear_id_lst[@]}"
+		echo -e "  Purge; clean files in db \u2933 $vgm_removed"
+		tput sgr0
+		# Mve the cursor up 2 lines
+		if [[ "$vgm_tested" != "${#clear_id_lst[@]}" ]]; then
+			printf "\033[2A"
+		fi
+
 	done
 
 done
@@ -687,6 +715,13 @@ fi
 # tag 2 db
 main() {
 local ext
+local vgm_tested
+local vgm_added
+local vgm_updated
+
+vgm_tested="0"
+vgm_added="0"
+vgm_updated="0"
 
 for file in "${lst_vgm[@]}"; do
 
@@ -729,7 +764,9 @@ for file in "${lst_vgm[@]}"; do
 
 		# Add in db
 		db_add
-		echo "added to db     : $tag_path"
+
+		# For print
+		vgm_added=$(( vgm_added + 1 ))
 
 	# If id exist & force tag
 	elif [[ ${dbquery_id_lst[*]} =~ $tag_id ]] \
@@ -738,8 +775,25 @@ for file in "${lst_vgm[@]}"; do
 		tag_force
 		db_force_update_album "$tag_id"
 		db_force_update_artist "$tag_id"
-		echo "updated        : $tag_path"
 
+		# For print
+		vgm_updated=$(( vgm_updated + 1 ))
+
+	fi
+
+	# For print
+	vgm_tested=$(( vgm_tested + 1 ))
+
+	# Print
+	echo " vgmfdb"
+	tput bold sitm
+	echo -e "  Files tested        \u2933 $vgm_tested"/"${#lst_vgm[@]}"
+	echo -e "  Files added to db   \u2933 $vgm_added"
+	echo -e "  Files updated in db \u2933 $vgm_updated"
+	tput sgr0
+	# Mve the cursor up 4 lines
+	if [[ "$vgm_tested" != "${#lst_vgm[@]}" ]]; then
+		printf "\033[4A"
 	fi
 
 	# Reset
