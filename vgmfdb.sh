@@ -448,7 +448,7 @@ local minute
 local second
 ext="$1"
 
-if [[ ${ext_tracker_openmpt} =~ $ext ]] \
+if echo "|${ext_tracker_openmpt}|" | grep -i "|${ext}|" &>/dev/null \
 && [[ -n "$openmpt123_bin" ]]; then
 	# Get file tags
 	"$openmpt123_bin" --info "$file" \
@@ -482,7 +482,7 @@ tag_sap() {
 local ext
 ext="$1"
 
-if [[ ${ext_sap} =~ $ext ]]; then
+if [[ "$ext" = "sap" ]]; then
 	# Get file tags
 	strings -e S "$file" | head -15 > "$temp_cache_tags"
 
@@ -502,7 +502,7 @@ local ext
 local info68_test_result
 ext="$1"
 
-if [[ ${ext_sc68} =~ $ext ]] \
+if echo "|${ext_sc68}|" | grep -i "|${ext}|" &>/dev/null \
 && [[ -n "$info68_bin" ]]; then
 	# Test file
 	info68_test_result=$("$info68_bin" "$file" \
@@ -558,7 +558,7 @@ local spc_duration
 local spc_fading
 ext="$1"
 
-if [[ ${ext_spc} =~ $ext ]] \
+if [[ "$ext" = "spc" ]] \
 && [[ -n "$xxd_bin" ]]; then
 	# file tags
 	tag_title=$("$xxd_bin" -ps -s 0x0002Eh -l 32 "$file" \
@@ -587,7 +587,7 @@ tag_vgm() {
 local ext
 ext="$1"
 
-if [[ ${ext_vgm} =~ $ext ]] \
+if echo "|${ext_vgm}|" | grep -i "|${ext}|" &>/dev/null \
 && [[ -n "$vgm_tag_bin" ]]; then
 	# Get file tags
 	"$vgm_tag_bin" -ShowTag8 "$file" > "$temp_cache_tags"
@@ -609,8 +609,8 @@ local vgmstream_test_result
 local sample_duration
 ext="$1"
 
-if [[ ${ext_vgmstream} =~ $ext ]] \
-&& [[ -n "$vgmstream_cli_bin" ]]; then
+if echo "|${ext_vgmstream}|" | grep -i "|${ext}|" &>/dev/null \
+	&& [[ -n "$vgmstream123_bin" ]]; then
 	# Test file
 	vgmstream_test_result=$("$vgmstream_cli_bin" -m "$file" 2>/dev/null)
 
@@ -637,8 +637,8 @@ local minute
 local second
 ext="$1"
 
-if [[ ${ext_xmp} =~ $ext ]] \
-&& [[ -n "$xmp_bin" ]]; then
+if echo "|${ext_xmp}|" | grep -i "|${ext}|" &>/dev/null \
+	&& [[ -n "$xmp_bin" ]]; then
 	# Get file tags
 	"$xmp_bin" --load-only "$file" &> "$temp_cache_tags"
 
@@ -667,7 +667,7 @@ tag_xsf() {
 local ext
 ext="$1"
 
-if [[ ${ext_xsf} =~ $ext ]]; then
+if echo "|${ext_xsf}|" | grep -i "|${ext}|" &>/dev/null; then
 	# Get file tags
 	strings -e S "$file" | sed -n '/TAG/,$p' > "$temp_cache_tags"
 
