@@ -373,6 +373,8 @@ if [[ -z "$tag_system" ]]; then
 		tag_system="Prorunner 2.0"
 	elif [[ "${file##*.}" = "s7g" ]]; then
 		tag_system="Jochen Hippel 7V"
+	elif [[ "${file##*.}" = "sfx" ]]; then
+		tag_system="SoundFX"
 	elif [[ "${file##*.}" = "soc" ]]; then
 		tag_system="Hippel-COSO"
 	elif [[ "${file##*.}" = "tiny" ]]; then
@@ -812,10 +814,11 @@ ext_sc68="sc68|snd|sndh"
 ext_sap="sap"
 ext_spc="spc"
 ext_tracker_openmpt="it|mod|mo3|mptm|s3m|stm|stp|plm|umx|xm"
+ext_tracker_uade="aam|abk|ahx|amc|aon|ast|bss|bp|bp3|cm|cus|dm|dm2|dmu|dss|dw|ea|ex|gmc|hot|fc13|fc14|med|mug|np3|okt|pru2|rk|s7g|sfx|smus|soc|p4x|tiny|tw"
 ext_vgm="vgm|vgz"
 ext_vgmstream_0_c="22k|8svx|acb|acm|ad|ads|adp|adpcm|adx|aix|akb|asf|apc|at3|at9|awb|bcstm|bcwav|bfstm|bfwav|bik|brstm|bwav|cfn|ckd|cmp|csb|csmp|cps"
 ext_vgmstream_d_n="dsm|dsp|dvi|fsb|gcm|genh|h4m|hca|hps|ifs|imc|int|isd|ivs|kma|kvs|lac3|lbin|lmp3|logg|lopus|lstm|lwav|mab|mca|mic|msf|mus|musx|nlsd|nop|npsf"
-ext_vgmstream_o_z="oma|ras|rsd|rsnd|rws|sad|scd|sgd|snd|ss2|str|strm|svag|p04|p16|pcm|psb|thp|trk|trs|txtp|ulw|vag|vas|vgmstream|voi|wem|xa|xai|xma|xnb|xwv"
+ext_vgmstream_o_z="oma|ras|rsd|rsnd|rws|sad|scd|sfx|sgd|snd|ss2|str|strm|svag|p04|p16|pcm|psb|thp|trk|trs|txtp|ulw|vag|vas|vgmstream|voi|wem|xa|xai|xma|xnb|xwv"
 ext_vgmstream="${ext_vgmstream_0_c}|${ext_vgmstream_d_n}|${ext_vgmstream_o_z}"
 ext_xmp="669|amf|dbm|digi|dsm|dsym|far|gz|mdl|musx|psm"
 ext_xsf="2sf|dsf|gsf|psf|psf2|mini2sf|minigsf|minipsf|minipsf2|minissf|miniusf|minincsf|ncsf|ssf|usf"
@@ -825,6 +828,7 @@ ext_all_raw="${ext_c64}| \
 			 ${ext_sap}| \
 			 ${ext_spc}| \
 			 ${ext_tracker_openmpt}| \
+			 ${ext_tracker_uade}| \
 			 ${ext_vgm}| \
 			 ${ext_vgmstream}| \
 			 ${ext_xmp}| \
