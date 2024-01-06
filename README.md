@@ -17,6 +17,8 @@ This little project was born with the aim of giving personalised information to 
 
 ## Supported Files
 
+* Atari ST & Amiga
+	* `sc68|snd|sndh`
 * Commodore
 	* `sid|prg`
 * Sony PS1, PS2; Sega Saturn, Dreamcast; Nintendo 64, DS, GBA:

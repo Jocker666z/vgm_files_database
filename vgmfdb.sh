@@ -12,6 +12,13 @@ local bin_name
 local system_bin_location
 local system_bin_location_bis
 
+# info68
+bin_name="info68"
+system_bin_location=$(command -v $bin_name)
+if [[ -n "$system_bin_location" ]]; then
+	info68_bin="$system_bin_location"
+fi
+
 # vgm_tag
 bin_name="vgm_tag"
 system_bin_location=$(command -v $bin_name)
@@ -433,7 +440,7 @@ tag_sid() {
 local ext
 ext="$1"
 
-if [[ "$ext" = "sid" ]]  \
+if [[ "$ext" = "sid" ]] \
 && [[ -n "$xxd_bin" ]]; then
 	# file tags
 	tag_artist=$("$xxd_bin" -ps -s 0x36 -l 32 "$file" \
@@ -452,13 +459,45 @@ if [[ "$ext" = "sid" ]]  \
 	fi
 fi
 }
+tag_sc68() {
+local ext
+local info68_test_result
+ext="$1"
+
+if [[ ${ext_sc68} =~ $ext ]] \
+&& [[ -n "$info68_bin" ]]; then
+	# Test file
+	info68_test_result=$("$info68_bin" "$file" \
+						| grep "not an sc68 file")
+
+	if [[ "${#info68_test_result}" = "0" ]]; then
+		# Get file tags
+		"$info68_bin" -A "$file" > "$temp_cache_tags"
+
+		# file tags
+		tag_title=$(< "$temp_cache_tags" grep -i -a title: \
+					| sed 's/^.*: //' | head -1)
+		if [[ -z "$tag_title" ]] \
+		|| [[ "$tag_title" = "N/A" ]]; then
+			unset tag_title
+		fi
+		tag_artist=$(< "$temp_cache_tags" grep -i -a artist: \
+					| sed 's/^.*: //' | head -1)
+		if [[ -z "$tag_artist" ]] \
+		|| [[ "$tag_artist" = "N/A" ]]; then
+			unset tag_artist
+		fi
+
+	fi
+fi
+}
 tag_spc() {
 local ext
 local spc_duration
 local spc_fading
 ext="$1"
 
-if [[ ${ext_spc} =~ $ext ]]  \
+if [[ ${ext_spc} =~ $ext ]] \
 && [[ -n "$xxd_bin" ]]; then
 	# file tags
 	tag_title=$("$xxd_bin" -ps -s 0x0002Eh -l 32 "$file" \
@@ -487,7 +526,7 @@ tag_vgm() {
 local ext
 ext="$1"
 
-if [[ ${ext_vgm} =~ $ext ]]  \
+if [[ ${ext_vgm} =~ $ext ]] \
 && [[ -n "$vgm_tag_bin" ]]; then
 	# Get file tags
 	"$vgm_tag_bin" -ShowTag8 "$file" > "$temp_cache_tags"
@@ -505,24 +544,30 @@ fi
 }
 tag_vgmstream() {
 local ext
+local vgmstream_test_result
 local sample_duration
 ext="$1"
 
-if [[ ${ext_vgmstream} =~ $ext ]]  \
+if [[ ${ext_vgmstream} =~ $ext ]] \
 && [[ -n "$vgmstream_cli_bin" ]]; then
-	# Get file tags
-	"$vgmstream_cli_bin" -m "$file" > "$temp_cache_tags"
+	# Test file
+	vgmstream_test_result=$("$vgmstream_cli_bin" -m "$file" 2>/dev/null)
 
-	# file tags
-	tag_system=$(sed -n 's/encoding:/&\n/;s/.*\n//p' "$temp_cache_tags" \
-				| awk '{$1=$1}1')
-	# Duration
-	sample_duration=$(< "$temp_cache_tags" grep "play duration:" \
+	if [[ "${#vgmstream_test_result}" -gt "0" ]]; then
+		# Get file tags
+		"$vgmstream_cli_bin" -m "$file" > "$temp_cache_tags"
+
+		# file tags
+		tag_system=$(sed -n 's/encoding:/&\n/;s/.*\n//p' "$temp_cache_tags" \
+					| awk '{$1=$1}1')
+		# Duration
+		sample_duration=$(< "$temp_cache_tags" grep "play duration:" \
+							| awk '{print $3}')
+		tag_frequency=$(< "$temp_cache_tags" grep "sample rate:" \
 						| awk '{print $3}')
-	tag_frequency=$(< "$temp_cache_tags" grep "sample rate:" \
-					| awk '{print $3}')
-	tag_duration=$(echo "scale=4;$sample_duration/$tag_frequency" \
-						| bc | awk '{print int($1+0.5)}')
+		tag_duration=$(echo "scale=4;$sample_duration/$tag_frequency" \
+							| bc | awk '{print int($1+0.5)}')
+	fi
 fi
 }
 tag_xmp() {
@@ -531,7 +576,7 @@ local minute
 local second
 ext="$1"
 
-if [[ ${ext_xmp} =~ $ext ]]  \
+if [[ ${ext_xmp} =~ $ext ]] \
 && [[ -n "$xmp_bin" ]]; then
 	# Get file tags
 	"$xmp_bin" --load-only "$file" &> "$temp_cache_tags"
@@ -598,11 +643,13 @@ for file in "${lst_vgm[@]}"; do
 
 		# file tags
 		tag_sid "$ext"
+		tag_sc68 "$ext"
 		tag_spc "$ext"
 		tag_vgm "$ext"
 		tag_vgmstream "$ext"
 		tag_xmp "$ext"
 		tag_xsf "$ext"
+
 		# Add missing tags
 		tag_default "$file"
 
@@ -697,22 +744,23 @@ temp_cache_tags=$(mktemp)
 tag_forced="0"
 
 ext_c64="sid|prg"
+ext_sc68="sc68|snd|sndh"
 ext_spc="spc"
 ext_vgm="vgm|vgz"
 ext_vgmstream_0_c="22k|8svx|acb|acm|ad|ads|adp|adpcm|adx|aix|akb|asf|apc|at3|at9|awb|bcstm|bcwav|bfstm|bfwav|bik|brstm|bwav|cfn|ckd|cmp|csb|csmp|cps"
 ext_vgmstream_d_n="dsm|dsp|dvi|fsb|gcm|genh|h4m|hca|hps|ifs|imc|int|isd|ivs|kma|kvs|lac3|lbin|lmp3|logg|lopus|lstm|lwav|mab|mca|mic|msf|mus|musx|nlsd|nop|npsf"
-ext_vgmstream_o_z="oma|ras|rsd|rsnd|rws|sad|scd|sgd|ss2|str|strm|svag|p04|p16|pcm|psb|thp|trk|trs|txtp|ulw|vag|vas|vgmstream|voi|wem|xa|xai|xma|xnb|xwv"
+ext_vgmstream_o_z="oma|ras|rsd|rsnd|rws|sad|scd|sgd|snd|ss2|str|strm|svag|p04|p16|pcm|psb|thp|trk|trs|txtp|ulw|vag|vas|vgmstream|voi|wem|xa|xai|xma|xnb|xwv"
 ext_vgmstream="${ext_vgmstream_0_c}|${ext_vgmstream_d_n}|${ext_vgmstream_o_z}"
 ext_xmp="669|amf|dbm|digi|dsm|dsym|far|gz|mdl|musx|psm"
 ext_xsf="2sf|dsf|gsf|psf|psf2|mini2sf|minigsf|minipsf|minipsf2|minissf|miniusf|minincsf|ncsf|ssf|usf"
 ext_all_raw="${ext_c64}| \
+			 ${ext_sc68}| \
 			 ${ext_spc}| \
 			 ${ext_vgm}| \
 			 ${ext_vgmstream}| \
 			 ${ext_xmp}| \
 			 ${ext_xsf}"
 ext_all=$(echo "${ext_all_raw//[[:blank:]]/}" | tr -s '|')
-
 
 config
 bin
