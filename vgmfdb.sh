@@ -18,6 +18,12 @@ if [[ -n "$system_bin_location" ]]; then
 	info68_bin="$system_bin_location"
 fi
 
+bin_name="openmpt123"
+system_bin_location=$(command -v $bin_name)
+if [[ -n "$system_bin_location" ]]; then
+	openmpt123_bin="$system_bin_location"
+fi
+
 # vgm_tag
 bin_name="vgm_tag"
 system_bin_location=$(command -v $bin_name)
@@ -435,6 +441,43 @@ if [[ -n "$tag_forced_artist" ]]; then
 	tag_artist="$tag_forced_artist"
 fi
 }
+tag_openmpt() {
+local ext
+local duration_record
+local minute
+local second
+ext="$1"
+
+if [[ ${ext_tracker_openmpt} =~ $ext ]] \
+&& [[ -n "$openmpt123_bin" ]]; then
+	# Get file tags
+	"$openmpt123_bin" --info "$file" \
+		> "$temp_cache_tags"
+
+	tag_title=$(< "$temp_cache_tags" grep "Title." \
+				| awk -F'.: ' '{print $NF}' | awk '{$1=$1};1')
+	tag_artist=$(< "$temp_cache_tags" grep "Artist." \
+				| awk -F'.: ' '{print $NF}' | awk '{$1=$1};1')
+	tag_system=$(< "$temp_cache_tags" grep "Tracker....:" \
+				| awk -F'.: ' '{print $NF}' | awk '{$1=$1};1')
+	# Duration
+	duration_record=$(< "$temp_cache_tags" grep "Duration." \
+						| awk '{print $2}')
+	if [[ "$duration_record" == *":"* ]]; then
+		minute=$(echo "$duration_record" | awk -F ":" '{print $1}' \
+				| sed 's/^0*//' )
+		second=$(echo "$duration_record" | awk -F ":" '{print $2}' \
+				| awk '{print int($1+0.5)}' | sed 's/^0*//')
+		if [[ -n "$minute" ]]; then
+			minute=$((minute*60))
+		fi
+		tag_duration=$((minute+second))
+	else
+		tag_duration=$(echo "$duration_record" \
+						| awk '{print int($1+0.5)}')
+	fi
+fi
+}
 tag_sap() {
 local ext
 ext="$1"
@@ -482,6 +525,7 @@ if [[ ${ext_sc68} =~ $ext ]] \
 		|| [[ "$tag_artist" = "N/A" ]]; then
 			unset tag_artist
 		fi
+		tag_system="SC68"
 	fi
 fi
 }
@@ -660,6 +704,7 @@ for file in "${lst_vgm[@]}"; do
 		ext="${ext,,}"
 
 		# file tags
+		tag_openmpt "$ext"
 		tag_sid "$ext"
 		tag_sc68 "$ext"
 		tag_sap "$ext"
@@ -766,6 +811,7 @@ ext_c64="sid|prg"
 ext_sc68="sc68|snd|sndh"
 ext_sap="sap"
 ext_spc="spc"
+ext_tracker_openmpt="it|mod|mo3|mptm|s3m|stm|stp|plm|umx|xm"
 ext_vgm="vgm|vgz"
 ext_vgmstream_0_c="22k|8svx|acb|acm|ad|ads|adp|adpcm|adx|aix|akb|asf|apc|at3|at9|awb|bcstm|bcwav|bfstm|bfwav|bik|brstm|bwav|cfn|ckd|cmp|csb|csmp|cps"
 ext_vgmstream_d_n="dsm|dsp|dvi|fsb|gcm|genh|h4m|hca|hps|ifs|imc|int|isd|ivs|kma|kvs|lac3|lbin|lmp3|logg|lopus|lstm|lwav|mab|mca|mic|msf|mus|musx|nlsd|nop|npsf"
@@ -777,6 +823,7 @@ ext_all_raw="${ext_c64}| \
 			 ${ext_sc68}| \
 			 ${ext_sap}| \
 			 ${ext_spc}| \
+			 ${ext_tracker_openmpt}| \
 			 ${ext_vgm}| \
 			 ${ext_vgmstream}| \
 			 ${ext_xmp}| \
