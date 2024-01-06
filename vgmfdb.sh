@@ -26,6 +26,13 @@ if [[ -n "$system_bin_location" ]]; then
 	vgmstream_cli_bin="$system_bin_location"
 fi
 
+# xmp
+bin_name="xmp"
+system_bin_location=$(command -v $bin_name)
+if [[ -n "$system_bin_location" ]]; then
+	xmp_bin="$system_bin_location"
+fi
+
 # xxd
 bin_name="xxd"
 system_bin_location=$(command -v $bin_name)
@@ -497,6 +504,39 @@ if [[ ${ext_vgmstream} =~ $ext ]]  \
 						| bc | awk '{print int($1+0.5)}')
 fi
 }
+tag_xmp() {
+local ext
+local minute
+local second
+ext="$1"
+
+if [[ ${ext_xmp} =~ $ext ]]  \
+&& [[ -n "$xmp_bin" ]]; then
+	# Get file tags
+	"$xmp_bin" --load-only "$file" &> "$temp_cache_tags"
+
+	tag_title=$(< "$temp_cache_tags" grep "Module name" \
+				| awk -F': ' '{print $NF}' | awk '{$1=$1};1')
+	tag_system=$(< "$temp_cache_tags" grep "Module type" \
+				| awk -F': ' '{print $NF}' | awk '{$1=$1};1')
+	tag_frequency=""
+	# Duration
+	duration_record=$(< "$temp_cache_tags" grep "Duration" \
+						| awk -F ":" '{print $2}')
+	duration_record="${duration_record//s/}"
+	if [[ "$duration_record" == *"min"* ]]; then
+		minute=$(echo "$duration_record" | awk -F "min" '{print $1}' \
+				| sed 's/^0*//' )
+		second=$(echo "$duration_record" | awk -F "min" '{print $2}' \
+				| awk '{print int($1+0.5)}' | sed 's/^0*//')
+		if [[ -n "$minute" ]]; then
+			minute=$((minute*60))
+		fi
+		tag_duration=$((minute+second))
+	fi
+
+fi
+}
 tag_xsf() {
 local ext
 ext="$1"
@@ -544,6 +584,7 @@ for file in "${lst_vgm[@]}"; do
 		tag_spc "$ext"
 		tag_vgm "$ext"
 		tag_vgmstream "$ext"
+		tag_xmp "$ext"
 		tag_xsf "$ext"
 		# Add missing tags
 		tag_default "$file"
@@ -560,7 +601,7 @@ for file in "${lst_vgm[@]}"; do
 
 	# If id exist & force tag
 	elif [[ ${dbquery_id_lst[*]} =~ $tag_id ]] \
-	  && [[ -n "$tag_forced" ]]; then
+	  && [[ "$tag_forced" = "1" ]]; then
 
 		tag_force
 		db_force_update_album "$tag_id"
@@ -642,10 +683,12 @@ ext_vgmstream_0_c="22k|8svx|acb|acm|ad|ads|adp|adpcm|adx|aix|akb|asf|apc|at3|at9
 ext_vgmstream_d_n="dsm|dsp|dvi|fsb|gcm|genh|h4m|hca|hps|ifs|imc|int|isd|ivs|kma|kvs|lac3|lbin|lmp3|logg|lopus|lstm|lwav|mab|mca|mic|msf|mus|musx|nlsd|nop|npsf"
 ext_vgmstream_o_z="oma|ras|rsd|rsnd|rws|sad|scd|sgd|ss2|str|strm|svag|p04|p16|pcm|psb|thp|trk|trs|txtp|ulw|vag|vas|vgmstream|voi|wem|xa|xai|xma|xnb|xwv"
 ext_vgmstream="${ext_vgmstream_0_c}|${ext_vgmstream_d_n}|${ext_vgmstream_o_z}"
+ext_xmp="669|amf|dbm|digi|dsm|dsym|far|gz|mdl|musx|psm"
 ext_xsf="2sf|dsf|gsf|psf|psf2|mini2sf|minigsf|minipsf|minipsf2|minissf|miniusf|minincsf|ncsf|ssf|usf"
 ext_all_raw="${ext_spc}| \
 			 ${ext_vgm}| \
 			 ${ext_vgmstream}| \
+			 ${ext_xmp}| \
 			 ${ext_xsf}"
 ext_all=$(echo "${ext_all_raw//[[:blank:]]/}" | tr -s '|')
 
