@@ -429,6 +429,31 @@ if [[ -n "$tag_forced_artist" ]]; then
 	tag_artist="$tag_forced_artist"
 fi
 }
+tag_sid() {
+local ext
+ext="$1"
+
+if [[ "$ext" = "sid" ]]  \
+&& [[ -n "$xxd_bin" ]]; then
+	# file tags
+	tag_artist=$("$xxd_bin" -ps -s 0x36 -l 32 "$file" \
+			| tr -d '[:space:]' | xxd -r -p | tr -d '\0' \
+			| iconv -f latin1 -t ascii//TRANSLIT \
+			| awk '{$1=$1}1')
+	if [[ "$tag_artist" = "<?>" ]]; then
+		unset tag_artist
+	fi
+	tag_album=$("$xxd_bin" -ps -s 0x16 -l 32 "$file" \
+			| tr -d '[:space:]' | xxd -r -p | tr -d '\0' \
+			| iconv -f latin1 -t ascii//TRANSLIT \
+			| awk '{$1=$1}1')
+	if [[ "$tag_album" = "<?>" ]]; then
+		unset tag_album
+	fi
+	tag_frequency=""
+	tag_duration=""
+fi
+}
 tag_spc() {
 local ext
 local spc_duration
@@ -577,10 +602,8 @@ for file in "${lst_vgm[@]}"; do
 		ext="${file##*.}"
 		ext="${ext,,}"
 
-		# Tag type of file
-		tag_type="${ext^^}"
-
 		# file tags
+		tag_sid "$ext"
 		tag_spc "$ext"
 		tag_vgm "$ext"
 		tag_vgmstream "$ext"
@@ -589,6 +612,8 @@ for file in "${lst_vgm[@]}"; do
 		# Add missing tags
 		tag_default "$file"
 
+		# Tag type of file
+		tag_type="${ext^^}"
 		# date added in db
 		tag_add_date=$(date "+%s")
 
@@ -677,6 +702,7 @@ temp_cache_tags=$(mktemp)
 # Default in db
 tag_forced="0"
 
+ext_c64="sid|prg"
 ext_spc="spc"
 ext_vgm="vgm|vgz"
 ext_vgmstream_0_c="22k|8svx|acb|acm|ad|ads|adp|adpcm|adx|aix|akb|asf|apc|at3|at9|awb|bcstm|bcwav|bfstm|bfwav|bik|brstm|bwav|cfn|ckd|cmp|csb|csmp|cps"
@@ -685,7 +711,8 @@ ext_vgmstream_o_z="oma|ras|rsd|rsnd|rws|sad|scd|sgd|ss2|str|strm|svag|p04|p16|pc
 ext_vgmstream="${ext_vgmstream_0_c}|${ext_vgmstream_d_n}|${ext_vgmstream_o_z}"
 ext_xmp="669|amf|dbm|digi|dsm|dsym|far|gz|mdl|musx|psm"
 ext_xsf="2sf|dsf|gsf|psf|psf2|mini2sf|minigsf|minipsf|minipsf2|minissf|miniusf|minincsf|ncsf|ssf|usf"
-ext_all_raw="${ext_spc}| \
+ext_all_raw="${ext_c64}| \
+			 ${ext_spc}| \
 			 ${ext_vgm}| \
 			 ${ext_vgmstream}| \
 			 ${ext_xmp}| \

@@ -17,6 +17,8 @@ This little project was born with the aim of giving personalised information to 
 
 ## Supported Files
 
+* Commodore
+	* `sid|prg`
 * Sony PS1, PS2; Sega Saturn, Dreamcast; Nintendo 64, DS, GBA:
 	* `2sf|gsf|dsf|psf|psf2|mini2sf|minigsf|minipsf|minipsf2|minissf|miniusf|minincsf|ncsf|ssf|usf`
 * Nintendo SNES/Super Famicom:
