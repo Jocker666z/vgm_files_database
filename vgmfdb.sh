@@ -450,8 +450,6 @@ if [[ "$ext" = "sid" ]]  \
 	if [[ "$tag_album" = "<?>" ]]; then
 		unset tag_album
 	fi
-	tag_frequency=""
-	tag_duration=""
 fi
 }
 tag_spc() {
@@ -501,8 +499,6 @@ if [[ ${ext_vgm} =~ $ext ]]  \
 				| awk '{$1=$1}1')
 	tag_album=$(sed -n 's/Game Name:/&\n/;s/.*\n//p' "$temp_cache_tags" \
 				| awk '{$1=$1}1')
-	tag_frequency=""
-	tag_duration=""
 	tag_system=$(sed -n 's/System:/&\n/;s/.*\n//p' "$temp_cache_tags" \
 				| awk '{$1=$1}1')
 fi
@@ -544,7 +540,6 @@ if [[ ${ext_xmp} =~ $ext ]]  \
 				| awk -F': ' '{print $NF}' | awk '{$1=$1};1')
 	tag_system=$(< "$temp_cache_tags" grep "Module type" \
 				| awk -F': ' '{print $NF}' | awk '{$1=$1};1')
-	tag_frequency=""
 	# Duration
 	duration_record=$(< "$temp_cache_tags" grep "Duration" \
 						| awk -F ":" '{print $2}')
@@ -572,7 +567,6 @@ if [[ ${ext_xsf} =~ $ext ]]; then
 	tag_title=$(< "$temp_cache_tags" grep -i -a title= | awk -F'=' '$0=$NF')
 	tag_artist=$(< "$temp_cache_tags" grep -i -a artist= | awk -F'=' '$0=$NF')
 	tag_album=$(< "$temp_cache_tags" grep -i -a game= | awk -F'=' '$0=$NF')
-	tag_frequency=""
 	tag_duration=$(< "$temp_cache_tags" grep -i -a length= | awk -F'=' '$0=$NF' \
 					| awk -F '.' 'NF > 1 { printf "%s", $1; exit } 1' \
 					| awk -F":" '{ print ($1 * 60) + $2 }' \
