@@ -27,6 +27,8 @@ By default the tags are taken with the filename and the directory that contains 
 
 ## Supported Files
 
+* AdLib
+	* `adl|amd|bam|cff|cmf|d00|dfm|ddt|dmo|dtm|got|hsc|hsq|imf|laa|ksm|m|mdi|mtk|rad|rol|sdb|sqx|wlf|xms|xsm`
 * Atari 8-bits
 	* `sap`
 * Atari ST & Amiga
@@ -37,6 +39,8 @@ By default the tags are taken with the filename and the directory that contains 
 	* `2sf|gsf|dsf|psf|psf2|mini2sf|minigsf|minipsf|minipsf2|minissf|miniusf|minincsf|ncsf|ssf|usf`
 * Nintendo SNES/Super Famicom:
 	* `spc`
+* Various machine:
+	* `ay|ams|dmf|dtt|hvl|mdx|mid|rmt|sap|v2m|vt2|vtx|xrns|ym`
 * Various machine (vgmplay supported files):
 	* `vgm|vgz`
 * Various machine (vgmstream supported files):

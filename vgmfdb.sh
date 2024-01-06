@@ -809,12 +809,14 @@ temp_cache_tags=$(mktemp)
 # Default in db
 tag_forced="0"
 
+ext_adlib="adl|amd|bam|cff|cmf|d00|dfm|ddt|dmo|dtm|got|hsc|hsq|imf|laa|ksm|m|mdi|mtk|rad|rol|sdb|sqx|wlf|xms|xsm"
 ext_c64="sid|prg"
 ext_sc68="sc68|snd|sndh"
 ext_sap="sap"
 ext_spc="spc"
 ext_tracker_openmpt="it|mod|mo3|mptm|s3m|stm|stp|plm|umx|xm"
 ext_tracker_uade="aam|abk|ahx|amc|aon|ast|bss|bp|bp3|cm|cus|dm|dm2|dmu|dss|dw|ea|ex|gmc|hot|fc13|fc14|med|mug|np3|okt|pru2|rk|s7g|sfx|smus|soc|p4x|tiny|tw"
+ext_various="ay|ams|dmf|dtt|hvl|mdx|mid|rmt|s98|sap|v2m|vt2|vtx|xrns|ym"
 ext_vgm="vgm|vgz"
 ext_vgmstream_0_c="22k|8svx|acb|acm|ad|ads|adp|adpcm|adx|aix|akb|asf|apc|at3|at9|awb|bcstm|bcwav|bfstm|bfwav|bik|brstm|bwav|cfn|ckd|cmp|csb|csmp|cps"
 ext_vgmstream_d_n="dsm|dsp|dvi|fsb|gcm|genh|h4m|hca|hps|ifs|imc|int|isd|ivs|kma|kvs|lac3|lbin|lmp3|logg|lopus|lstm|lwav|mab|mca|mic|msf|mus|musx|nlsd|nop|npsf"
@@ -823,12 +825,14 @@ ext_vgmstream="${ext_vgmstream_0_c}|${ext_vgmstream_d_n}|${ext_vgmstream_o_z}"
 ext_xmp="669|amf|dbm|digi|dsm|dsym|far|gz|mdl|musx|psm"
 ext_xsf="2sf|dsf|gsf|psf|psf2|mini2sf|minigsf|minipsf|minipsf2|minissf|miniusf|minincsf|ncsf|ssf|usf"
 ext_zx_spectrum="asc|psc|pt1|pt2|pt3|sqt|stc|stp|tap|zxs"
-ext_all_raw="${ext_c64}| \
+ext_all_raw="${ext_adlib}| \
+			 ${ext_c64}| \
 			 ${ext_sc68}| \
 			 ${ext_sap}| \
 			 ${ext_spc}| \
 			 ${ext_tracker_openmpt}| \
 			 ${ext_tracker_uade}| \
+			 ${ext_various}| \
 			 ${ext_vgm}| \
 			 ${ext_vgmstream}| \
 			 ${ext_xmp}| \
