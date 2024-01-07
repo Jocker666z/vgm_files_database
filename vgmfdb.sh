@@ -243,7 +243,6 @@ if [[ -z "$id_forced_remove" ]] \
 			if [[ "$vgm_tested" != "${#clear_id_lst[@]}" ]]; then
 				printf "\033[2A"
 			fi
-
 		done
 
 	done
