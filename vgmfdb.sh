@@ -883,6 +883,15 @@ done
 # Trap
 trap 'kill' INT TERM SIGHUP
 
+# Paths
+export PATH=$PATH:/home/$USER/.local/bin
+vgmfdb_config_dir="/home/$USER/.config/vgmfdb"
+vgmfdb_database="/home/$USER/.config/vgmfdb/vgm.db"
+temp_cache_tags=$(mktemp)
+
+# Default in db
+tag_forced="0"
+
 # Arguments
 while [[ $# -gt 0 ]]; do
 	vgmfdb_arg="$1"
@@ -937,15 +946,6 @@ while [[ $# -gt 0 ]]; do
 	esac
 	shift
 done
-
-# Paths
-export PATH=$PATH:/home/$USER/.local/bin
-vgmfdb_config_dir="/home/$USER/.config/vgmfdb"
-vgmfdb_database="/home/$USER/.config/vgmfdb/vgm.db"
-temp_cache_tags=$(mktemp)
-
-# Default in db
-tag_forced="0"
 
 ext_adlib="adl|amd|bam|cff|cmf|d00|dfm|ddt|dmo|dtm|got|hsc|hsq|imf|laa|ksm|m|mdi|mtk|rad|rol|sdb|sqx|wlf|xms|xsm"
 ext_c64="sid|prg"
