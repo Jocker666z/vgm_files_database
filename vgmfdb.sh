@@ -370,6 +370,9 @@ if [[ -z "$tag_system" ]]; then
 	elif [[ "${file##*.}" = "xsm" ]]; then
 		tag_system="eXtra Simple Music"
 
+	elif [[ "${file##*.}" = "ay" ]]; then
+		tag_system="AY-3-8910"
+
 	# MIDI
 	elif [[ "${file##*.}" = "mid" ]]; then
 		tag_system="MIDI"
@@ -399,6 +402,8 @@ if [[ -z "$tag_system" ]]; then
 		tag_system="SoundMon 2.0"
 	elif [[ "${file##*.}" = "cm" ]] || [[ "${file##*.}" = "rk" ]]; then
 		tag_system="CustomMade"
+	elif [[ "${file##*.}" = "cus" ]]; then
+		tag_system="DeliTracker Custom"
 	elif [[ "${file##*.}" = "dw" ]]; then
 		tag_system="David Whittaker"
 	elif [[ "${file##*.}" = "gmc" ]]; then
@@ -451,6 +456,9 @@ if [[ -z "$tag_system" ]]; then
 		tag_system="Nintendo 64"
 	elif [[ "${file##*.}" = "dsf" ]]; then
 		tag_system="Sega Dreamcast"
+
+	elif [[ "${file##*.}" = "ym" ]]; then
+		tag_system="Yamaha Music"
 
 	# ZX Spectrum (zxtune)
 	elif [[ "${file##*.}" = "asc" ]]; then
