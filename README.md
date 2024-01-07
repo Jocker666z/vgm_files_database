@@ -5,11 +5,12 @@ This little project was born with the aim of giving personalised information to 
                                    Without option inplace recursively add files in db.
   -h|--help                        Display this help.
   -i|--input <directory>           Target search directory.
+  --id_forced_remove               Force remove current files from db.
   --tag_forced_album "text"        Force album name.
   --tag_forced_artist "text"       Force artist name.
 
    -i is cumulative: -i <dir0> -i <dir1> ...
-   Be careful with --tag_forced, no selection = recursive action.
+   Be careful with forced, no selection = recursive action.
 ```
 
 ## Install & update

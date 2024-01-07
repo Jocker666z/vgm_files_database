@@ -91,11 +91,12 @@ Usage: vgmfdb [options]
                                    Without option inplace recursively add files in db.
   -h|--help                        Display this help.
   -i|--input <directory>           Target search directory.
+  --id_forced_remove               Force remove current files from db.
   --tag_forced_album "text"        Force album name.
   --tag_forced_artist "text"       Force artist name.
 
    -i is cumulative: -i <dir0> -i <dir1> ...
-   Be careful with --tag_forced, no selection = recursive action.
+   Be careful with forced, no selection = recursive action.
 EOF
 }
 
@@ -193,52 +194,59 @@ INSERT OR IGNORE INTO vgm (\
 		);
 EOF
 }
+db_remove() {
+sqlite3 "$vgmfdb_database" "DELETE FROM vgm WHERE id = '${tag_id}'"
+}
 db_purge() {
 local row_removed
 local input_realpath
 local vgm_tested
 local vgm_removed
 
-vgm_tested="0"
-vgm_removed="0"
+if [[ -z "$id_forced_remove" ]]; then
 
-# Regenerate db_id
-db_id
-# List orphan
-mapfile -t clear_id_lst < <(printf '%s\n' "${dbquery_id_lst[@]}" "${add_id_lst[@]}" | sort | uniq -u)
+	vgm_tested="0"
+	vgm_removed="0"
 
-for value in "${clear_id_lst[@]}"; do
+	# Regenerate db_id
+	db_id
+	# List orphan
+	mapfile -t clear_id_lst < <(printf '%s\n' "${dbquery_id_lst[@]}" "${add_id_lst[@]}" | sort | uniq -u)
 
-	row_removed=$(sqlite3 "$vgmfdb_database" "SELECT path FROM vgm WHERE id = '${value}'")
+	for value in "${clear_id_lst[@]}"; do
 
-	# Limit clean at the directory selected
-	for input in "${input_dir[@]}"; do
-		input_realpath=$(realpath "$input")
-		test_path=$(echo "$row_removed" | grep "$input_realpath")
-		if [[ -n "$test_path" ]]; then
-			# Remove in db
-			sqlite3 "$vgmfdb_database" "DELETE FROM vgm WHERE id = '${value}'"
+		row_removed=$(sqlite3 "$vgmfdb_database" "SELECT path FROM vgm WHERE id = '${value}'")
+
+		# Limit clean at the directory selected
+		for input in "${input_dir[@]}"; do
+			input_realpath=$(realpath "$input")
+			test_path=$(echo "$row_removed" | grep "$input_realpath")
+			if [[ -n "$test_path" ]]; then
+				# Remove in db
+				sqlite3 "$vgmfdb_database" "DELETE FROM vgm WHERE id = '${value}'"
+				# For print
+				vgm_removed=$(( vgm_removed + 1 ))
+				continue 2
+			fi
+
 			# For print
-			vgm_removed=$(( vgm_removed + 1 ))
-			continue 2
-		fi
+			vgm_tested=$(( vgm_tested + 1 ))
 
-		# For print
-		vgm_tested=$(( vgm_tested + 1 ))
+			# Print
+			tput bold sitm
+			echo -e "  Purge; test file in db   \u2933 $vgm_tested"/"${#clear_id_lst[@]}"
+			echo -e "  Purge; clean files in db \u2933 $vgm_removed"
+			tput sgr0
+			# Mve the cursor up 2 lines
+			if [[ "$vgm_tested" != "${#clear_id_lst[@]}" ]]; then
+				printf "\033[2A"
+			fi
 
-		# Print
-		tput bold sitm
-		echo -e "  Purge; test file in db   \u2933 $vgm_tested"/"${#clear_id_lst[@]}"
-		echo -e "  Purge; clean files in db \u2933 $vgm_removed"
-		tput sgr0
-		# Mve the cursor up 2 lines
-		if [[ "$vgm_tested" != "${#clear_id_lst[@]}" ]]; then
-			printf "\033[2A"
-		fi
+		done
 
 	done
 
-done
+fi
 
 sqlite3 "$vgmfdb_database" 'VACUUM;'
 }
@@ -490,6 +498,10 @@ if echo "|${ext_tracker_openmpt}|" | grep -i "|${ext}|" &>/dev/null \
 				| awk -F'.: ' '{print $NF}' | awk '{$1=$1};1')
 	tag_system=$(< "$temp_cache_tags" grep "Tracker....:" \
 				| awk -F'.: ' '{print $NF}' | awk '{$1=$1};1')
+	if [[ "${tag_system}" = "Unknown" ]]; then
+		tag_system=$(< "$temp_cache_tags" grep "Type.......:" \
+					| awk -F'[()]' '{print $2}')
+	fi
 	# Duration
 	duration_record=$(< "$temp_cache_tags" grep "Duration." \
 						| awk '{print $2}')
@@ -640,7 +652,7 @@ local sample_duration
 ext="$1"
 
 if echo "|${ext_vgmstream}|" | grep -i "|${ext}|" &>/dev/null \
-	&& [[ -n "$vgmstream123_bin" ]]; then
+	&& [[ -n "$vgmstream_cli_bin" ]]; then
 	# Test file
 	vgmstream_test_result=$("$vgmstream_cli_bin" -m "$file" 2>/dev/null)
 
@@ -718,10 +730,12 @@ local ext
 local vgm_tested
 local vgm_added
 local vgm_updated
+local vgm_removed
 
 vgm_tested="0"
 vgm_added="0"
 vgm_updated="0"
+vgm_removed="0"
 
 for file in "${lst_vgm[@]}"; do
 
@@ -733,8 +747,9 @@ for file in "${lst_vgm[@]}"; do
 				| sha256sum | awk '{print $1;}')
 	add_id_lst+=( "$tag_id" )
 
-	# If id not exist
-	if ! [[ ${dbquery_id_lst[*]} =~ $tag_id ]]; then
+	# If id not exist & no force remove
+	if ! [[ ${dbquery_id_lst[*]} =~ $tag_id ]] \
+	  && [[ -z "$id_forced_remove" ]]; then
 
 		# For test ext
 		ext="${file##*.}"
@@ -768,9 +783,10 @@ for file in "${lst_vgm[@]}"; do
 		# For print
 		vgm_added=$(( vgm_added + 1 ))
 
-	# If id exist & force tag
+	# If id exist & force tag & no force remove
 	elif [[ ${dbquery_id_lst[*]} =~ $tag_id ]] \
-	  && [[ "$tag_forced" = "1" ]]; then
+	  && [[ "$tag_forced" = "1" ]] \
+	  && [[ -z "$id_forced_remove" ]]; then
 
 		tag_force
 		db_force_update_album "$tag_id"
@@ -778,6 +794,15 @@ for file in "${lst_vgm[@]}"; do
 
 		# For print
 		vgm_updated=$(( vgm_updated + 1 ))
+
+	# If id exist & force remove
+	elif [[ ${dbquery_id_lst[*]} =~ $tag_id ]] \
+	  && [[ "$id_forced_remove" = "1" ]]; then
+
+		db_remove
+
+		# For print
+		vgm_removed=$(( vgm_removed + 1 ))
 
 	fi
 
@@ -790,10 +815,11 @@ for file in "${lst_vgm[@]}"; do
 	echo -e "  Files tested        \u2933 $vgm_tested"/"${#lst_vgm[@]}"
 	echo -e "  Files added to db   \u2933 $vgm_added"
 	echo -e "  Files updated in db \u2933 $vgm_updated"
+	echo -e "  Files removed in db \u2933 $vgm_removed"
 	tput sgr0
-	# Mve the cursor up 4 lines
+	# Mve the cursor up 5 lines
 	if [[ "$vgm_tested" != "${#lst_vgm[@]}" ]]; then
-		printf "\033[4A"
+		printf "\033[5A"
 	fi
 
 	# Reset
@@ -823,6 +849,9 @@ while [[ $# -gt 0 ]]; do
 					exit
 				fi
 			done
+		;;
+		--id_forced_remove)
+			id_forced_remove="1"
 		;;
 		--tag_forced_album)
 			shift
