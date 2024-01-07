@@ -89,6 +89,7 @@ Bash script for populate sqlite database with various type of vgm files.
 
 Usage: vgmfdb [options]
                                    Without option inplace recursively add files in db.
+  --clean_db                       Compare current file with db & clean
   -h|--help                        Display this help.
   -i|--input <directory>           Target search directory.
   --id_forced_remove               Force remove current files from db.
@@ -203,7 +204,8 @@ local input_realpath
 local vgm_tested
 local vgm_removed
 
-if [[ -z "$id_forced_remove" ]]; then
+if [[ -z "$id_forced_remove" ]] \
+&& [[ -n "$clean_db" ]]; then
 
 	vgm_tested="0"
 	vgm_removed="0"
@@ -838,6 +840,9 @@ while [[ $# -gt 0 ]]; do
 		-h|--help)
 			usage
 			exit
+		;;
+		--clean_db)
+			clean_db="1"
 		;;
 		-i|--input)
 			shift
