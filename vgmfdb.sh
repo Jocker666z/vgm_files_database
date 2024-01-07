@@ -491,6 +491,8 @@ fi
 }
 tag_openmpt() {
 local ext
+local openmpt123_test_result
+local xmp_test_result
 local duration_record
 local minute
 local second
@@ -498,36 +500,77 @@ ext="$1"
 
 if echo "|${ext_tracker_openmpt}|" | grep -i "|${ext}|" &>/dev/null \
 && [[ -n "$openmpt123_bin" ]]; then
-	# Get file tags
-	"$openmpt123_bin" --info "$file" \
-		> "$temp_cache_tags"
 
-	tag_title=$(< "$temp_cache_tags" grep "Title." \
-				| awk -F'.: ' '{print $NF}' | awk '{$1=$1};1')
-	tag_artist=$(< "$temp_cache_tags" grep "Artist." \
-				| awk -F'.: ' '{print $NF}' | awk '{$1=$1};1')
-	tag_system=$(< "$temp_cache_tags" grep "Tracker....:" \
-				| awk -F'.: ' '{print $NF}' | awk '{$1=$1};1')
-	if [[ "${tag_system}" = "Unknown" ]]; then
-		tag_system=$(< "$temp_cache_tags" grep "Type.......:" \
-					| awk -F'[()]' '{print $2}')
-	fi
-	# Duration
-	duration_record=$(< "$temp_cache_tags" grep "Duration." \
-						| awk '{print $2}')
-	if [[ "$duration_record" == *":"* ]]; then
-		minute=$(echo "$duration_record" | awk -F ":" '{print $1}' \
-				| sed 's/^0*//' )
-		second=$(echo "$duration_record" | awk -F ":" '{print $2}' \
-				| awk '{print int($1+0.5)}' | sed 's/^0*//')
-		if [[ -n "$minute" ]]; then
-			minute=$((minute*60))
+	# Test file
+	openmpt123_test_result=$("$openmpt123_bin" --info "$file" \
+							| grep "error loading file")
+
+	if [[ "${#openmpt123_test_result}" = "0" ]]; then
+		# Get file tags
+		"$openmpt123_bin" --info "$file" \
+			> "$temp_cache_tags"
+
+		tag_title=$(< "$temp_cache_tags" grep "Title." \
+					| awk -F'.: ' '{print $NF}' | awk '{$1=$1};1')
+		tag_artist=$(< "$temp_cache_tags" grep "Artist." \
+					| awk -F'.: ' '{print $NF}' | awk '{$1=$1};1')
+		tag_system=$(< "$temp_cache_tags" grep "Tracker....:" \
+					| awk -F'.: ' '{print $NF}' | awk '{$1=$1};1')
+		if [[ "${tag_system}" = "Unknown" ]]; then
+			tag_system=$(< "$temp_cache_tags" grep "Type.......:" \
+						| awk -F'[()]' '{print $2}')
 		fi
-		tag_duration=$((minute+second))
-	else
-		tag_duration=$(echo "$duration_record" \
-						| awk '{print int($1+0.5)}')
+		# Duration
+		duration_record=$(< "$temp_cache_tags" grep "Duration." \
+							| awk '{print $2}')
+		if [[ "$duration_record" == *":"* ]]; then
+			minute=$(echo "$duration_record" | awk -F ":" '{print $1}' \
+					| sed 's/^0*//' )
+			second=$(echo "$duration_record" | awk -F ":" '{print $2}' \
+					| awk '{print int($1+0.5)}' | sed 's/^0*//')
+			if [[ -n "$minute" ]]; then
+				minute=$((minute*60))
+			fi
+			tag_duration=$((minute+second))
+		else
+			tag_duration=$(echo "$duration_record" \
+							| awk '{print int($1+0.5)}')
+		fi
 	fi
+fi
+
+if echo "|${ext_tracker_openmpt}|" | grep -i "|${ext}|" &>/dev/null \
+&& [[ -n "$xmp_bin" ]] \
+&& [[ "${#openmpt123_test_result}" -gt "0" ]]; then
+
+	# Test file
+	xmp_test_result=$("$xmp_bin" --load-only "$file" 2>&1 \
+					| grep "Unrecognized file format")
+
+	if [[ "${#xmp_test_result}" = "0" ]]; then
+		# Get file tags
+		"$xmp_bin" --load-only "$file" &> "$temp_cache_tags"
+
+		tag_title=$(< "$temp_cache_tags" grep "Module name" \
+					| awk -F': ' '{print $NF}' | awk '{$1=$1};1')
+		tag_system=$(< "$temp_cache_tags" grep "Module type" \
+					| awk -F': ' '{print $NF}' | awk '{$1=$1};1')
+		# Duration
+		duration_record=$(< "$temp_cache_tags" grep "Duration" \
+							| awk -F ":" '{print $2}')
+		duration_record="${duration_record//s/}"
+		if [[ "$duration_record" == *"min"* ]]; then
+			minute=$(echo "$duration_record" | awk -F "min" '{print $1}' \
+					| sed 's/^0*//' )
+			second=$(echo "$duration_record" | awk -F "min" '{print $2}' \
+					| awk '{print int($1+0.5)}' | sed 's/^0*//')
+			if [[ -n "$minute" ]]; then
+				minute=$((minute*60))
+			fi
+			tag_duration=$((minute+second))
+		fi
+	fi
+
 fi
 }
 tag_sap() {
