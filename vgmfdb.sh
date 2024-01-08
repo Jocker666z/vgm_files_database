@@ -330,7 +330,7 @@ if [[ -n "$get_current_tags" ]]; then
 	for value in "${add_id_lst[@]}"; do
 		lst_db_get_current_tags+=( $(sqlite3 "$vgmfdb_database" "SELECT path, title, artist, album, system, type \
 									FROM vgm WHERE id = '${value}'" \
-									| rev | cut -d'/' -f-3 | rev) )
+									| rev | cut -d'/' -f-2 | rev) )
 	done
 	# Reset IFS
 	IFS="$oldIFS"
@@ -339,7 +339,7 @@ if [[ -n "$get_current_tags" ]]; then
 	echo "--------------------------"
 	printf '%s\n' "${lst_db_get_current_tags[@]}" \
 		| sort -V \
-		| column -T 1 -s $'|' -t -o ' | ' -N "Current files tags,title,artist,album,system,type"
+		| column -T 3 -s $'|' -t -o ' | ' -N "Current files tags,title,artist,album,system,type"
 	echo "--------------------------"
 fi
 }
