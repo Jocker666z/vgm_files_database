@@ -397,6 +397,8 @@ if [[ -z "$tag_system" ]]; then
 		tag_system="Super Nintendo / Super Famicom"
 
 	# Tracker (uade)
+	elif [[ "${file##*.}" = "ahx" ]]; then
+		tag_system="Abyss Highest eXperience"
 	elif [[ "${file##*.}" = "bp" ]]; then
 		tag_system="SoundMon 2.0"
 	elif [[ "${file##*.}" = "cm" ]] || [[ "${file##*.}" = "rk" ]]; then
@@ -405,6 +407,8 @@ if [[ -z "$tag_system" ]]; then
 		tag_system="DeliTracker Custom"
 	elif [[ "${file##*.}" = "dw" ]]; then
 		tag_system="David Whittaker"
+	elif [[ "${file##*.}" = "fc13" ]] || [[ "${file##*.}" = "fc14" ]]; then
+		tag_system="Future Composer"
 	elif [[ "${file##*.}" = "gmc" ]]; then
 		tag_system="Game Music Creator"
 	elif [[ "${file##*.}" = "np3" ]]; then
