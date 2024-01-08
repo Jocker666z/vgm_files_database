@@ -2,14 +2,15 @@ This little project was born with the aim of giving personalised information to 
 
 ## Usage
 ```
-                                   Without option inplace recursively add files in db.
-  --get_current_tags               Display tags in db of current files.
-  -h|--help                        Display this help.
-  -i|--input <directory>           Target search directory.
-  --id_forced_remove               Force remove current files from db.
-  --tag_forced_album "text"        Force album name.
-  --tag_forced_artist "text"       Force artist name.
-  --tag_forced_system "text"       Force system name.
+                                 Without option inplace recursively add files in db.
+  --get_current_tags             Display tags in db of current files.
+  -h|--help                      Display this help.
+  -i|--input <directory>         Target search directory.
+  --id_forced_remove             Force remove current files from db.
+  --tag_forced_album "text"      Force album name.
+  --tag_forced_artist "text"     Force artist name.
+  --tag_forced_system "text"     Force system name.
+  --tag_forced_stitle "integer"  Force remove N character at beginning of title.
 
    -i is cumulative: -i <dir0> -i <dir1> ...
    Be careful with forced, no selection = recursive action.
