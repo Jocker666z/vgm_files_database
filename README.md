@@ -10,6 +10,7 @@ This little project was born with the aim of giving personalised information to 
   --tag_forced_album "text"      Force album name.
   --tag_forced_artist "text"     Force artist name.
   --tag_forced_system "text"     Force system name.
+  --tag_forced_etitle "integer"  Force remove N character at the end of title.
   --tag_forced_stitle "integer"  Force remove N character at beginning of title.
 
    -i is cumulative: -i <dir0> -i <dir1> ...

@@ -91,14 +91,15 @@ Usage: vgmfdb [options]
                                  Without option inplace recursively add files in db.
   --get_current_tags             Display tags in db of current files.
   -h|--help                      Display this help.
-  -i|--input <directory>         Target search directory.
+  -i|--input <directory/file>    Target search directory or file.
   --id_forced_remove             Force remove current files from db.
   --tag_forced_album "text"      Force album name.
   --tag_forced_artist "text"     Force artist name.
   --tag_forced_system "text"     Force system name.
+  --tag_forced_etitle "integer"  Force remove N character at the end of title.
   --tag_forced_stitle "integer"  Force remove N character at beginning of title.
 
-   -i is cumulative: -i <dir0> -i <dir1> ...
+   -i is cumulative: -i <dir0> -i <dir1> -i <file>...
    Be careful with forced, no selection = recursive action.
 EOF
 }
@@ -125,6 +126,9 @@ done
 
 # Reset IFS
 IFS="$oldIFS"
+
+# Remove duplicate
+mapfile -t lst_vgm <  <(printf '%s\n' "${lst_vgm[@]}" | sort -u)
 }
 
 # db change
@@ -299,7 +303,7 @@ if [[ -n "$tag_forced_system" ]]; then
 	fi
 fi
 }
-db_force_update_title() {
+db_force_update_stitle() {
 if [[ -n "$tag_forced_stitle" ]]; then
 	local id
 	local title
@@ -317,6 +321,25 @@ if [[ -n "$tag_forced_stitle" ]]; then
 	vgm_updated_true="1"
 fi
 }
+db_force_update_etitle() {
+if [[ -n "$tag_forced_etitle" ]]; then
+	local id
+	local title
+	local damn
+	id="$1"
+	# Quote sub
+	damn="''"
+
+	title=$(sqlite3 "$vgmfdb_database" "SELECT title \
+			FROM vgm WHERE id = '${id}'")
+	title="${title:0:-${tag_forced_etitle}}"
+
+	sqlite3 "$vgmfdb_database" "UPDATE vgm SET title = '${title//\'/$damn}' WHERE id = '$id'"
+	sqlite3 "$vgmfdb_database" "UPDATE vgm SET tag_forced = 1 WHERE id = '$id'"
+	vgm_updated_true="1"
+fi
+}
+
 # db query
 db_id() {
 mapfile -t dbquery_id_lst < <(sqlite3 "$vgmfdb_database" "SELECT id FROM vgm")
@@ -339,7 +362,7 @@ if [[ -n "$get_current_tags" ]]; then
 	echo "--------------------------"
 	printf '%s\n' "${lst_db_get_current_tags[@]}" \
 		| sort -V \
-		| column -T 3 -s $'|' -t -o ' | ' -N "Current files tags,title,artist,album,system,type"
+		| column -T 1,3 -s $'|' -t -o ' | ' -N "Current files tags,title,artist,album,system,type"
 	echo "--------------------------"
 fi
 }
@@ -919,7 +942,8 @@ for file in "${lst_vgm[@]}"; do
 		db_force_update_album "$tag_id"
 		db_force_update_artist "$tag_id"
 		db_force_update_system "$tag_id"
-		db_force_update_title "$tag_id"
+		db_force_update_stitle "$tag_id"
+		db_force_update_etitle "$tag_id"
 
 		# For print
 		if [[ "$vgm_updated_true" = "1" ]]; then
@@ -1024,6 +1048,18 @@ while [[ $# -gt 0 ]]; do
 			if [[ -z "$tag_forced_system" ]]; then
 				echo_error "vgmfdb was breaked."
 				echo_error "System name must be filled."
+				exit
+			else
+				tag_forced="1"
+			fi
+		;;
+		--tag_forced_etitle)
+			shift
+			tag_forced_etitle="$1"
+			if [[ -z "$tag_forced_etitle" ]] \
+			|| ! [[ "$1" =~ ^[0-9]*$ ]]; then
+				echo_error "vgmfdb was breaked."
+				echo_error "A positive integer must be filled."
 				exit
 			else
 				tag_forced="1"
