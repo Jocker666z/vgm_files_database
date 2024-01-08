@@ -89,12 +89,13 @@ Bash script for populate sqlite database with various type of vgm files.
 
 Usage: vgmfdb [options]
                                    Without option inplace recursively add files in db.
-  --clean_db                       Compare current file with db & clean
+  --clean_db                       Compare current file with db & clean.
   -h|--help                        Display this help.
   -i|--input <directory>           Target search directory.
   --id_forced_remove               Force remove current files from db.
   --tag_forced_album "text"        Force album name.
   --tag_forced_artist "text"       Force artist name.
+  --tag_forced_system "text"       Force system name.
 
    -i is cumulative: -i <dir0> -i <dir1> ...
    Be careful with forced, no selection = recursive action.
@@ -272,6 +273,18 @@ if [[ -n "$tag_forced_artist" ]]; then
 	damn="''"
 
 	sqlite3 "$vgmfdb_database" "UPDATE vgm SET artist = '${tag_artist//\'/$damn}' WHERE id = '$id'"
+	sqlite3 "$vgmfdb_database" "UPDATE vgm SET tag_forced = 1 WHERE id = '$id'"
+fi
+}
+db_force_update_system() {
+if [[ -n "$tag_forced_system" ]]; then
+	local id
+	local damn
+	id="$1"
+	# Quote sub
+	damn="''"
+
+	sqlite3 "$vgmfdb_database" "UPDATE vgm SET system = '${tag_system//\'/$damn}' WHERE id = '$id'"
 	sqlite3 "$vgmfdb_database" "UPDATE vgm SET tag_forced = 1 WHERE id = '$id'"
 fi
 }
@@ -490,6 +503,9 @@ if [[ -n "$tag_forced_album" ]]; then
 fi
 if [[ -n "$tag_forced_artist" ]]; then
 	tag_artist="$tag_forced_artist"
+fi
+if [[ -n "$tag_forced_system" ]]; then
+	tag_system="$tag_forced_system"
 fi
 }
 tag_openmpt() {
@@ -847,6 +863,7 @@ for file in "${lst_vgm[@]}"; do
 		tag_force
 		db_force_update_album "$tag_id"
 		db_force_update_artist "$tag_id"
+		db_force_update_system "$tag_id"
 
 		# For print
 		vgm_updated=$(( vgm_updated + 1 ))
@@ -938,6 +955,17 @@ while [[ $# -gt 0 ]]; do
 			if [[ -z "$tag_forced_artist" ]]; then
 				echo_error "vgmfdb was breaked."
 				echo_error "Artist name must be filled."
+				exit
+			else
+				tag_forced="1"
+			fi
+		;;
+		--tag_forced_system)
+			shift
+			tag_forced_system="$1"
+			if [[ -z "$tag_forced_system" ]]; then
+				echo_error "vgmfdb was breaked."
+				echo_error "System name must be filled."
 				exit
 			else
 				tag_forced="1"
