@@ -89,6 +89,7 @@ Bash script for populate sqlite database with various type of vgm files.
 
 Usage: vgmfdb [options]
                                    Without option inplace recursively add files in db.
+  --get_current_tags               Display current files tags in db.
   -h|--help                        Display this help.
   -i|--input <directory>           Target search directory.
   --id_forced_remove               Force remove current files from db.
@@ -224,7 +225,7 @@ if [[ -z "$id_forced_remove" ]]; then
 
 		# Print
 		tput bold sitm
-		echo -e "  Purge; clean files in db \u2933 $vgm_removed"
+		echo -e " Purge; clean files in db \u2933 $vgm_removed"
 		tput sgr0
 		# Cursor up 1 lines
 		if [[ "$vgm_removed" != "${#clear_id_lst[@]}" ]]; then
@@ -301,6 +302,28 @@ fi
 # db query
 db_id() {
 mapfile -t dbquery_id_lst < <(sqlite3 "$vgmfdb_database" "SELECT id FROM vgm")
+}
+db_get_current_tags() {
+local oldIFS
+
+if [[ -n "$get_current_tags" ]]; then
+	# Change IFS
+	IFS=$'\n'
+	for value in "${add_id_lst[@]}"; do
+		lst_db_get_current_tags+=( $(sqlite3 "$vgmfdb_database" "SELECT path, title, artist, album, system \
+									FROM vgm WHERE id = '${value}'" \
+									| rev | cut -d'/' -f-3 | rev) )
+	done
+	# Reset IFS
+	IFS="$oldIFS"
+
+	# Print tag
+	echo "--------------------------"
+	printf '%s\n' "${lst_db_get_current_tags[@]}" \
+		| sort -V \
+		| column -T 1 -s $'|' -t -o ' | ' -N "Current files tags,title,artist,album,system"
+	echo "--------------------------"
+fi
 }
 
 # Tag specific
@@ -545,7 +568,7 @@ if echo "|${ext_tracker_openmpt}|" | grep -i "|${ext}|" &>/dev/null \
 		tag_system=$(< "$temp_cache_tags" grep "Tracker....:" \
 					| awk -F'.: ' '{print $NF}' | awk '{$1=$1};1')
 		if [[ "${tag_system}" = "Unknown" ]] \
-		|| [[ "${tag_system}" = "..converted." ]]; then
+		|| [[ "${tag_system}" = "..converted.." ]]; then
 			tag_system=$(< "$temp_cache_tags" grep "Type.......:" \
 						| awk -F'[()]' '{print $2}')
 		fi
@@ -896,12 +919,12 @@ for file in "${lst_vgm[@]}"; do
 	vgm_tested=$(( vgm_tested + 1 ))
 
 	# Print
-	echo " vgmfdb"
+	echo "vgmfdb"
 	tput bold sitm
-	echo -e "  Files tested        \u2933 $vgm_tested"/"${#lst_vgm[@]}"
-	echo -e "  Files added to db   \u2933 $vgm_added"
-	echo -e "  Files updated in db \u2933 $vgm_updated"
-	echo -e "  Files removed in db \u2933 $vgm_removed"
+	echo -e " Files tested        \u2933 $vgm_tested"/"${#lst_vgm[@]}"
+	echo -e " Files added to db   \u2933 $vgm_added"
+	echo -e " Files updated in db \u2933 $vgm_updated"
+	echo -e " Files removed in db \u2933 $vgm_removed"
 	tput sgr0
 	# Cursor up 5 lines
 	if [[ "$vgm_tested" != "${#lst_vgm[@]}" ]]; then
@@ -933,6 +956,9 @@ while [[ $# -gt 0 ]]; do
 		-h|--help)
 			usage
 			exit
+		;;
+		--get_current_tags)
+			get_current_tags="1"
 		;;
 		-i|--input)
 			shift
@@ -1027,5 +1053,6 @@ search_vgm
 db_id
 main
 db_purge
+db_get_current_tags
 
 kill
