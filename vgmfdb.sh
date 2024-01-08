@@ -89,7 +89,6 @@ Bash script for populate sqlite database with various type of vgm files.
 
 Usage: vgmfdb [options]
                                    Without option inplace recursively add files in db.
-  --clean_db                       Compare current file with db & clean.
   -h|--help                        Display this help.
   -i|--input <directory>           Target search directory.
   --id_forced_remove               Force remove current files from db.
@@ -200,51 +199,35 @@ db_remove() {
 sqlite3 "$vgmfdb_database" "DELETE FROM vgm WHERE id = '${tag_id}'"
 }
 db_purge() {
-local row_removed
 local input_realpath
-local vgm_tested
 local vgm_removed
 
-if [[ -z "$id_forced_remove" ]] \
-&& [[ -n "$clean_db" ]]; then
+if [[ -z "$id_forced_remove" ]]; then
 
-	vgm_tested="0"
 	vgm_removed="0"
 
-	# Regenerate db_id
-	db_id
-	# List orphan
-	mapfile -t clear_id_lst < <(printf '%s\n' "${dbquery_id_lst[@]}" "${add_id_lst[@]}" | sort | uniq -u)
+	# Limit clean at the directory selected 
+	for input in "${input_dir[@]}"; do
+		input_realpath=$(realpath "$input")
+		clear_id_lst+=( $(sqlite3 "$vgmfdb_database" \
+						"SELECT id FROM vgm WHERE path LIKE '${input_realpath}%'") )
+	done
+	# List orphan/removed
+	mapfile -t clear_id_lst < <(printf '%s\n' "${clear_id_lst[@]}" "${add_id_lst[@]}" | sort | uniq -u)
 
 	for value in "${clear_id_lst[@]}"; do
 
-		row_removed=$(sqlite3 "$vgmfdb_database" "SELECT path FROM vgm WHERE id = '${value}'")
+		sqlite3 "$vgmfdb_database" "DELETE FROM vgm WHERE id = '${value}'"
+		vgm_removed=$(( vgm_removed + 1 ))
 
-		# Limit clean at the directory selected
-		for input in "${input_dir[@]}"; do
-			input_realpath=$(realpath "$input")
-			test_path=$(echo "$row_removed" | grep "$input_realpath")
-			if [[ -n "$test_path" ]]; then
-				# Remove in db
-				sqlite3 "$vgmfdb_database" "DELETE FROM vgm WHERE id = '${value}'"
-				# For print
-				vgm_removed=$(( vgm_removed + 1 ))
-				continue 2
-			fi
-
-			# For print
-			vgm_tested=$(( vgm_tested + 1 ))
-
-			# Print
-			tput bold sitm
-			echo -e "  Purge; test file in db   \u2933 $vgm_tested"/"${#clear_id_lst[@]}"
-			echo -e "  Purge; clean files in db \u2933 $vgm_removed"
-			tput sgr0
-			# Mve the cursor up 2 lines
-			if [[ "$vgm_tested" != "${#clear_id_lst[@]}" ]]; then
-				printf "\033[2A"
-			fi
-		done
+		# Print
+		tput bold sitm
+		echo -e "  Purge; clean files in db \u2933 $vgm_removed"
+		tput sgr0
+		# Cursor up 2 lines
+		if [[ "$vgm_removed" != "${#clear_id_lst[@]}" ]]; then
+			printf "\033[1A"
+		fi
 
 	done
 
@@ -890,7 +873,7 @@ for file in "${lst_vgm[@]}"; do
 	echo -e "  Files updated in db \u2933 $vgm_updated"
 	echo -e "  Files removed in db \u2933 $vgm_removed"
 	tput sgr0
-	# Mve the cursor up 5 lines
+	# Cursor up 5 lines
 	if [[ "$vgm_tested" != "${#lst_vgm[@]}" ]]; then
 		printf "\033[5A"
 	fi
@@ -920,9 +903,6 @@ while [[ $# -gt 0 ]]; do
 		-h|--help)
 			usage
 			exit
-		;;
-		--clean_db)
-			clean_db="1"
 		;;
 		-i|--input)
 			shift

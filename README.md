@@ -3,7 +3,6 @@ This little project was born with the aim of giving personalised information to 
 ## Usage
 ```
                                    Without option inplace recursively add files in db.
-  --clean_db                       Compare current file with db & clean.
   -h|--help                        Display this help.
   -i|--input <directory>           Target search directory.
   --id_forced_remove               Force remove current files from db.
