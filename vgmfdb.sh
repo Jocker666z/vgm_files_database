@@ -168,6 +168,12 @@ local damn
 # Quote sub
 damn="''"
 
+# Replace / by - ; cause display error
+tag_title="${tag_title//\//-}"
+tag_artist="${tag_artist//\//-}"
+tag_album="${tag_album//\//-}"
+tag_system="${tag_system//\//-}"
+
 sqlite3 "$vgmfdb_database" <<EOF
 INSERT OR IGNORE INTO vgm (\
 	id, \
@@ -353,7 +359,7 @@ if [[ -n "$get_current_tags" ]]; then
 	for value in "${add_id_lst[@]}"; do
 		lst_db_get_current_tags+=( $(sqlite3 "$vgmfdb_database" "SELECT path, title, artist, album, system, type \
 									FROM vgm WHERE id = '${value}'" \
-									| rev | cut -d'/' -f-2 | rev) )
+									| rev | cut -d'/' -f-1 | rev) )
 	done
 	# Reset IFS
 	IFS="$oldIFS"
