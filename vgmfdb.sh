@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# shellcheck disable=
+# shellcheck disable=SC2207
 # vgmfdb
 # Bash script for populate sqlite database with vgm
 #
@@ -209,11 +209,13 @@ if [[ -z "$id_forced_remove" ]]; then
 	# Limit clean at the directory selected 
 	for input in "${input_dir[@]}"; do
 		input_realpath=$(realpath "$input")
-		clear_id_lst+=( $(sqlite3 "$vgmfdb_database" \
-						"SELECT id FROM vgm WHERE path LIKE '${input_realpath}%'") )
+		mapfile -t clear_id_lst < <(sqlite3 "$vgmfdb_database" \
+									"SELECT id FROM vgm WHERE path \
+									LIKE '${input_realpath}%'")
 	done
 	# List orphan/removed
-	mapfile -t clear_id_lst < <(printf '%s\n' "${clear_id_lst[@]}" "${add_id_lst[@]}" | sort | uniq -u)
+	mapfile -t clear_id_lst < <(printf '%s\n' "${clear_id_lst[@]}" "${add_id_lst[@]}" \
+								| sort | uniq -u)
 
 	for value in "${clear_id_lst[@]}"; do
 
@@ -224,7 +226,7 @@ if [[ -z "$id_forced_remove" ]]; then
 		tput bold sitm
 		echo -e "  Purge; clean files in db \u2933 $vgm_removed"
 		tput sgr0
-		# Cursor up 2 lines
+		# Cursor up 1 lines
 		if [[ "$vgm_removed" != "${#clear_id_lst[@]}" ]]; then
 			printf "\033[1A"
 		fi
@@ -238,37 +240,61 @@ sqlite3 "$vgmfdb_database" 'VACUUM;'
 db_force_update_album() {
 if [[ -n "$tag_forced_album" ]]; then
 	local id
+	local album
 	local damn
 	id="$1"
 	# Quote sub
 	damn="''"
 
-	sqlite3 "$vgmfdb_database" "UPDATE vgm SET album = '${tag_album//\'/$damn}' WHERE id = '$id'"
-	sqlite3 "$vgmfdb_database" "UPDATE vgm SET tag_forced = 1 WHERE id = '$id'"
+	album=$(sqlite3 "$vgmfdb_database" "SELECT album FROM vgm WHERE id = '${id}'")
+
+	if [[ "$tag_album" != "$album" ]]; then
+		sqlite3 "$vgmfdb_database" "UPDATE vgm SET album = '${tag_album//\'/$damn}' WHERE id = '$id'"
+		sqlite3 "$vgmfdb_database" "UPDATE vgm SET tag_forced = 1 WHERE id = '$id'"
+		vgm_updated_true="1"
+	else
+		vgm_updated_true="0"
+	fi
 fi
 }
 db_force_update_artist() {
 if [[ -n "$tag_forced_artist" ]]; then
 	local id
+	local artist
 	local damn
 	id="$1"
 	# Quote sub
 	damn="''"
 
-	sqlite3 "$vgmfdb_database" "UPDATE vgm SET artist = '${tag_artist//\'/$damn}' WHERE id = '$id'"
-	sqlite3 "$vgmfdb_database" "UPDATE vgm SET tag_forced = 1 WHERE id = '$id'"
+	artist=$(sqlite3 "$vgmfdb_database" "SELECT artist FROM vgm WHERE id = '${id}'")
+
+	if [[ "$tag_artist" != "$artist" ]]; then
+		sqlite3 "$vgmfdb_database" "UPDATE vgm SET artist = '${tag_artist//\'/$damn}' WHERE id = '$id'"
+		sqlite3 "$vgmfdb_database" "UPDATE vgm SET tag_forced = 1 WHERE id = '$id'"
+		vgm_updated_true="1"
+	else
+		vgm_updated_true="0"
+	fi
 fi
 }
 db_force_update_system() {
 if [[ -n "$tag_forced_system" ]]; then
 	local id
+	local system
 	local damn
 	id="$1"
 	# Quote sub
 	damn="''"
 
-	sqlite3 "$vgmfdb_database" "UPDATE vgm SET system = '${tag_system//\'/$damn}' WHERE id = '$id'"
-	sqlite3 "$vgmfdb_database" "UPDATE vgm SET tag_forced = 1 WHERE id = '$id'"
+	system=$(sqlite3 "$vgmfdb_database" "SELECT system FROM vgm WHERE id = '${id}'")
+
+	if [[ "$tag_system" != "$system" ]]; then
+		sqlite3 "$vgmfdb_database" "UPDATE vgm SET system = '${tag_system//\'/$damn}' WHERE id = '$id'"
+		sqlite3 "$vgmfdb_database" "UPDATE vgm SET tag_forced = 1 WHERE id = '$id'"
+		vgm_updated_true="1"
+	else
+		vgm_updated_true="0"
+	fi
 fi
 }
 
@@ -518,10 +544,12 @@ if echo "|${ext_tracker_openmpt}|" | grep -i "|${ext}|" &>/dev/null \
 					| awk -F'.: ' '{print $NF}' | awk '{$1=$1};1')
 		tag_system=$(< "$temp_cache_tags" grep "Tracker....:" \
 					| awk -F'.: ' '{print $NF}' | awk '{$1=$1};1')
-		if [[ "${tag_system}" = "Unknown" ]]; then
+		if [[ "${tag_system}" = "Unknown" ]] \
+		|| [[ "${tag_system}" = "..converted." ]]; then
 			tag_system=$(< "$temp_cache_tags" grep "Type.......:" \
 						| awk -F'[()]' '{print $2}')
 		fi
+
 		# Duration
 		duration_record=$(< "$temp_cache_tags" grep "Duration." \
 							| awk '{print $2}')
@@ -849,7 +877,9 @@ for file in "${lst_vgm[@]}"; do
 		db_force_update_system "$tag_id"
 
 		# For print
-		vgm_updated=$(( vgm_updated + 1 ))
+		if [[ "$vgm_updated_true" = "1" ]]; then
+			vgm_updated=$(( vgm_updated + 1 ))
+		fi
 
 	# If id exist & force remove
 	elif [[ ${dbquery_id_lst[*]} =~ $tag_id ]] \
