@@ -23,6 +23,7 @@ Usage: vgmfdb [options]
   -tft|--tag_forced_title "text"      Force title name.
   -tfte|--tag_forced_etitle "integer" Force remove N character at the end of title.
   -tfts|--tag_forced_stitle "integer" Force remove N character at beginning of title.
+  -tftp|--tag_forced_ptitle "text"    Force remove a pattern in title.
 
    Be careful with forced, no selection = recursive action.
 ```

@@ -108,6 +108,7 @@ Usage: vgmfdb [options]
   -tft|--tag_forced_title "text"      Force title name.
   -tfte|--tag_forced_etitle "integer" Force remove N character at the end of title.
   -tfts|--tag_forced_stitle "integer" Force remove N character at beginning of title.
+  -tftp|--tag_forced_ptitle "text"    Force remove a pattern in title.
 
    Be careful with forced, no selection = recursive action.
 EOF
@@ -389,6 +390,28 @@ if [[ -n "$tag_forced_etitle" ]]; then
 	vgm_updated_true="1"
 fi
 }
+db_force_update_ptitle() {
+if [[ -n "$tag_forced_ptitle" ]]; then
+	local id
+	local title
+	local damn
+	id="$1"
+	# Quote sub
+	damn="''"
+
+	title=$(sqlite3 "$vgmfdb_database" "SELECT title \
+			FROM vgm WHERE id = '${id}'")
+	title="${title//$tag_forced_ptitle}"
+
+	if [[ "$tag_title" != "$title" ]]; then
+		sqlite3 "$vgmfdb_database" "UPDATE vgm SET title = '${title//\'/$damn}' WHERE id = '$id'"
+		sqlite3 "$vgmfdb_database" "UPDATE vgm SET tag_forced = 1 WHERE id = '$id'"
+		vgm_updated_true="1"
+	else
+		vgm_updated_true="0"
+	fi
+fi
+}
 
 # db query
 db_id() {
@@ -640,6 +663,9 @@ fi
 if [[ -n "$tag_forced_stitle" ]]; then
 	tag_title="${tag_title:${tag_forced_stitle}}"
 	tag_title="${tag_title#"${tag_title%%[![:space:]]*}"}"
+fi
+if [[ -n "$tag_forced_ptitle" ]]; then
+	tag_title="${tag_title//$tag_forced_ptitle}"
 fi
 }
 tag_openmpt() {
@@ -1005,6 +1031,7 @@ for file in "${lst_vgm[@]}"; do
 		db_force_update_title "$tag_id"
 		db_force_update_stitle "$tag_id"
 		db_force_update_etitle "$tag_id"
+		db_force_update_ptitle "$tag_id"
 
 		# For print
 		if [[ "$vgm_updated_true" = "1" ]]; then
@@ -1154,6 +1181,17 @@ while [[ $# -gt 0 ]]; do
 			|| ! [[ "$1" =~ ^[0-9]*$ ]]; then
 				echo_error "vgmfdb was breaked."
 				echo_error "A positive integer must be filled."
+				exit
+			else
+				tag_forced="1"
+			fi
+		;;
+		-tftp|--tag_forced_ptitle)
+			shift
+			tag_forced_ptitle="$1"
+			if [[ -z "$tag_forced_ptitle" ]]; then
+				echo_error "vgmfdb was breaked."
+				echo_error "Pattern name must be filled."
 				exit
 			else
 				tag_forced="1"
