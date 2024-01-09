@@ -225,22 +225,23 @@ sqlite3 "$vgmfdb_database" "DELETE FROM vgm WHERE id = '${tag_id}'"
 }
 db_purge() {
 local damn
-local input_realpath
 local vgm_removed
 
 # Quote sub
 damn="''"
 
-if [[ -z "$id_forced_remove" ]]; then
+# No USE when filter type
+if [[ -z "$id_forced_remove" ]] \
+&& [[ -z "$input_filter_type" ]]; then
 
 	vgm_removed="0"
 
 	# Limit clean at the directory selected 
 	for input in "${input_dir[@]}"; do
-		input_realpath=$(realpath "$input")
+		input=$(realpath "$input")
 		mapfile -t clear_id_lst < <(sqlite3 "$vgmfdb_database" \
 									"SELECT id FROM vgm WHERE path \
-									LIKE '${input_realpath//\'/$damn}%'")
+									LIKE '${input//\'/$damn}%'")
 	done
 	# List orphan/removed
 	mapfile -t clear_id_lst < <(printf '%s\n' "${clear_id_lst[@]}" "${add_id_lst[@]}" \
@@ -1017,6 +1018,19 @@ temp_cache_tags=$(mktemp)
 
 # Default in db
 tag_forced="0"
+
+_yourscript_complete()
+{
+    # list of options for your script
+    local options="--add --remove"
+
+    # current word being completed (provided by stock bash completion)
+    local current_word="${COMP_WORDS[COMP_CWORD]}"
+
+    # create list of possible matches and store to ${COMREPLY[@}}
+    COMPREPLY=($(compgen -W "${options}" -- "$current_word"))
+}
+complete -F _yourscript_complete vgmfdb
 
 # Arguments
 while [[ $# -gt 0 ]]; do
