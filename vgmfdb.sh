@@ -181,6 +181,7 @@ local damn
 
 # Quote sub
 damn="''"
+damn2="’’"
 
 # Replace / by - ; cause display error
 tag_title="${tag_title//\//-}"
@@ -392,7 +393,8 @@ mapfile -t dbquery_id_lst < <(sqlite3 "$vgmfdb_database" "SELECT id FROM vgm")
 db_get_current_tags() {
 local oldIFS
 
-if [[ -n "$get_current_tags" ]]; then
+if [[ -n "$get_current_tags" ]] \
+&& [[ -z "$id_forced_remove" ]]; then
 	# Change IFS
 	IFS=$'\n'
 	for value in "${add_id_lst[@]}"; do
@@ -911,8 +913,10 @@ local ext
 ext="$1"
 
 if echo "|${ext_xsf}|" | grep -i "|${ext}|" &>/dev/null; then
-	# Get file tags
-	strings -e S "$file" | sed -n '/TAG/,$p' > "$temp_cache_tags"
+	# Get file tags (Keep only ascii)
+	strings -e S "$file" \
+	| tr -cd '\11\12\15\40-\176' \
+	| sed -n '/TAG/,$p' > "$temp_cache_tags"
 
 	# file tags
 	tag_title=$(< "$temp_cache_tags" grep -i -a title= | awk -F'=' '$0=$NF')
@@ -1046,19 +1050,6 @@ temp_cache_tags=$(mktemp)
 
 # Default in db
 tag_forced="0"
-
-_yourscript_complete()
-{
-    # list of options for your script
-    local options="--add --remove"
-
-    # current word being completed (provided by stock bash completion)
-    local current_word="${COMP_WORDS[COMP_CWORD]}"
-
-    # create list of possible matches and store to ${COMREPLY[@}}
-    COMPREPLY=($(compgen -W "${options}" -- "$current_word"))
-}
-complete -F _yourscript_complete vgmfdb
 
 # Arguments
 while [[ $# -gt 0 ]]; do
