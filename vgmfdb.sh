@@ -224,8 +224,12 @@ db_remove() {
 sqlite3 "$vgmfdb_database" "DELETE FROM vgm WHERE id = '${tag_id}'"
 }
 db_purge() {
+local damn
 local input_realpath
 local vgm_removed
+
+# Quote sub
+damn="''"
 
 if [[ -z "$id_forced_remove" ]]; then
 
@@ -236,7 +240,7 @@ if [[ -z "$id_forced_remove" ]]; then
 		input_realpath=$(realpath "$input")
 		mapfile -t clear_id_lst < <(sqlite3 "$vgmfdb_database" \
 									"SELECT id FROM vgm WHERE path \
-									LIKE '${input_realpath}%'")
+									LIKE '${input_realpath//\'/$damn}%'")
 	done
 	# List orphan/removed
 	mapfile -t clear_id_lst < <(printf '%s\n' "${clear_id_lst[@]}" "${add_id_lst[@]}" \
