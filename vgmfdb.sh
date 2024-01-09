@@ -105,6 +105,7 @@ Usage: vgmfdb [options]
   --tag_forced_album "text"       Force album name.
   --tag_forced_artist "text"      Force artist name.
   --tag_forced_system "text"      Force system name.
+  --tag_forced_title "text"       Force title name.
   --tag_forced_etitle "integer"   Force remove N character at the end of title.
   --tag_forced_stitle "integer"   Force remove N character at beginning of title.
 
@@ -230,7 +231,7 @@ local vgm_removed
 # Quote sub
 damn="''"
 
-# No USE when filter type
+# No USE when filter type = remove other type in directory
 if [[ -z "$id_forced_remove" ]] \
 && [[ -z "$input_filter_type" ]]; then
 
@@ -320,6 +321,26 @@ if [[ -n "$tag_forced_system" ]]; then
 
 	if [[ "$tag_system" != "$system" ]]; then
 		sqlite3 "$vgmfdb_database" "UPDATE vgm SET system = '${tag_system//\'/$damn}' WHERE id = '$id'"
+		sqlite3 "$vgmfdb_database" "UPDATE vgm SET tag_forced = 1 WHERE id = '$id'"
+		vgm_updated_true="1"
+	else
+		vgm_updated_true="0"
+	fi
+fi
+}
+db_force_update_title() {
+if [[ -n "$tag_forced_title" ]]; then
+	local id
+	local system
+	local damn
+	id="$1"
+	# Quote sub
+	damn="''"
+
+	title=$(sqlite3 "$vgmfdb_database" "SELECT title FROM vgm WHERE id = '${id}'")
+
+	if [[ "$tag_title" != "$title" ]]; then
+		sqlite3 "$vgmfdb_database" "UPDATE vgm SET title = '${tag_title//\'/$damn}' WHERE id = '$id'"
 		sqlite3 "$vgmfdb_database" "UPDATE vgm SET tag_forced = 1 WHERE id = '$id'"
 		vgm_updated_true="1"
 	else
@@ -603,6 +624,12 @@ if [[ -n "$tag_forced_artist" ]]; then
 fi
 if [[ -n "$tag_forced_system" ]]; then
 	tag_system="$tag_forced_system"
+fi
+if [[ -n "$tag_forced_title" ]]; then
+	tag_title="$tag_forced_title"
+fi
+if [[ -n "$tag_forced_etitle" ]]; then
+	tag_title="${tag_title:0:-${tag_forced_stitle}}"
 fi
 if [[ -n "$tag_forced_stitle" ]]; then
 	tag_title="${tag_title:${tag_forced_stitle}}"
@@ -966,6 +993,7 @@ for file in "${lst_vgm[@]}"; do
 		db_force_update_album "$tag_id"
 		db_force_update_artist "$tag_id"
 		db_force_update_system "$tag_id"
+		db_force_update_title "$tag_id"
 		db_force_update_stitle "$tag_id"
 		db_force_update_etitle "$tag_id"
 
@@ -1085,6 +1113,17 @@ while [[ $# -gt 0 ]]; do
 			if [[ -z "$tag_forced_system" ]]; then
 				echo_error "vgmfdb was breaked."
 				echo_error "System name must be filled."
+				exit
+			else
+				tag_forced="1"
+			fi
+		;;
+		--tag_forced_title)
+			shift
+			tag_forced_title="$1"
+			if [[ -z "$tag_forced_title" ]]; then
+				echo_error "vgmfdb was breaked."
+				echo_error "Title name must be filled."
 				exit
 			else
 				tag_forced="1"

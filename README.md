@@ -20,6 +20,7 @@ Usage: vgmfdb [options]
   --tag_forced_album "text"       Force album name.
   --tag_forced_artist "text"      Force artist name.
   --tag_forced_system "text"      Force system name.
+  --tag_forced_title "text"       Force title name.
   --tag_forced_etitle "integer"   Force remove N character at the end of title.
   --tag_forced_stitle "integer"   Force remove N character at beginning of title.
 
