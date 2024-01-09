@@ -360,7 +360,11 @@ if [[ -n "$tag_forced_stitle" ]]; then
 
 	title=$(sqlite3 "$vgmfdb_database" "SELECT title \
 			FROM vgm WHERE id = '${id}'")
+
+	# Remove N 
 	title="${title:${tag_forced_stitle}}"
+	# Remove lead space
+	title="${title#"${title%%[![:space:]]*}"}"
 
 	sqlite3 "$vgmfdb_database" "UPDATE vgm SET title = '${title//\'/$damn}' WHERE id = '$id'"
 	sqlite3 "$vgmfdb_database" "UPDATE vgm SET tag_forced = 1 WHERE id = '$id'"
@@ -408,7 +412,7 @@ if [[ -n "$get_current_tags" ]] \
 	# Print tag
 	echo "--------------------------"
 	printf '%s\n' "${lst_db_get_current_tags[@]}" \
-		| sort -V \
+		| sort -t$'|' -k 4 -V \
 		| column -T 1,3 -s $'|' -t -o ' | ' -N "Current files tags,title,artist,album,system,type"
 	echo "--------------------------"
 fi
@@ -635,6 +639,7 @@ if [[ -n "$tag_forced_etitle" ]]; then
 fi
 if [[ -n "$tag_forced_stitle" ]]; then
 	tag_title="${tag_title:${tag_forced_stitle}}"
+	tag_title="${tag_title#"${tag_title%%[![:space:]]*}"}"
 fi
 }
 tag_openmpt() {
@@ -1052,6 +1057,7 @@ temp_cache_tags=$(mktemp)
 tag_forced="0"
 
 # Arguments
+
 while [[ $# -gt 0 ]]; do
 	vgmfdb_arg="$1"
 	case "$vgmfdb_arg" in
