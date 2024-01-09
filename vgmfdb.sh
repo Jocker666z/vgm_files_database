@@ -102,6 +102,7 @@ Usage: vgmfdb [options]
 
  Database manipulation:
   -idrm|--id_forced_remove            Force remove current files from db.
+  --no_purge_db                       dDactivate database cleanup.
   -tfal|--tag_forced_album "text"     Force album name.
   -tfar|--tag_forced_artist "text"    Force artist name.
   -tfs|--tag_forced_system "text"     Force system name.
@@ -235,6 +236,7 @@ damn="''"
 
 # No USE when filter type = remove other type in directory
 if [[ -z "$id_forced_remove" ]] \
+&& [[ -z "$no_purge_db" ]] \
 && [[ -z "$input_filter_type" ]]; then
 
 	vgm_removed="0"
@@ -1117,6 +1119,9 @@ while [[ $# -gt 0 ]]; do
 		;;
 		-idrm|--id_forced_remove)
 			id_forced_remove="1"
+		;;
+		--no_purge_db)
+			no_purge_db="1"
 		;;
 		-tfal|--tag_forced_album)
 			shift
