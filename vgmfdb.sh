@@ -88,18 +88,26 @@ vgmfdb - <https://github.com/Jocker666z/vgm_files_database>
 Bash script for populate sqlite database with various type of vgm files.
 
 Usage: vgmfdb [options]
-                                 Without option inplace recursively add files in db.
-  --get_current_tags             Display tags in db of current files.
-  -h|--help                      Display this help.
-  -i|--input <directory/file>    Target search directory or file.
-  --id_forced_remove             Force remove current files from db.
-  --tag_forced_album "text"      Force album name.
-  --tag_forced_artist "text"     Force artist name.
-  --tag_forced_system "text"     Force system name.
-  --tag_forced_etitle "integer"  Force remove N character at the end of title.
-  --tag_forced_stitle "integer"  Force remove N character at beginning of title.
+  -h|--help                       Display this help.
+
+ Files search:
+                                  Without option inplace recursively add files in db.
+  -i|--input <directory/file>     Target search directory or file.
+  --input_filter_type "ext0|ext1" Selects only the given file extension(s).
 
    -i is cumulative: -i <dir0> -i <dir1> -i <file>...
+
+ Database query:
+  --get_current_tags              Display tags in db of current files.
+
+ Database manipulation:
+  --id_forced_remove              Force remove current files from db.
+  --tag_forced_album "text"       Force album name.
+  --tag_forced_artist "text"      Force artist name.
+  --tag_forced_system "text"      Force system name.
+  --tag_forced_etitle "integer"   Force remove N character at the end of title.
+  --tag_forced_stitle "integer"   Force remove N character at beginning of title.
+
    Be careful with forced, no selection = recursive action.
 EOF
 }
@@ -110,6 +118,11 @@ local input_realpath
 local oldIFS
 
 oldIFS="$IFS"
+
+# If type filter
+if [[ -n "$input_filter_type" ]]; then
+	ext_all="${input_filter_type,,}"
+fi
 
 # If no input dir
 if ! (( "${#input_dir[@]}" )); then
@@ -1081,6 +1094,15 @@ while [[ $# -gt 0 ]]; do
 				exit
 			else
 				tag_forced="1"
+			fi
+		;;
+		--input_filter_type)
+			shift
+			input_filter_type="$1"
+			if [[ -z "$input_filter_type" ]]; then
+				echo_error "vgmfdb was breaked."
+				echo_error "Type of file (extension) must be filled."
+				exit
 			fi
 		;;
 		*)

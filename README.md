@@ -2,18 +2,27 @@ This little project was born with the aim of giving personalised information to 
 
 ## Usage
 ```
-                                 Without option inplace recursively add files in db.
-  --get_current_tags             Display tags in db of current files.
-  -h|--help                      Display this help.
-  -i|--input <directory>         Target search directory.
-  --id_forced_remove             Force remove current files from db.
-  --tag_forced_album "text"      Force album name.
-  --tag_forced_artist "text"     Force artist name.
-  --tag_forced_system "text"     Force system name.
-  --tag_forced_etitle "integer"  Force remove N character at the end of title.
-  --tag_forced_stitle "integer"  Force remove N character at beginning of title.
+Usage: vgmfdb [options]
+  -h|--help                       Display this help.
 
-   -i is cumulative: -i <dir0> -i <dir1> ...
+ Files search:
+                                  Without option inplace recursively add files in db.
+  -i|--input <directory/file>     Target search directory or file.
+  --input_filter_type "ext0|ext1" Selects only the given file extension(s).
+
+   -i is cumulative: -i <dir0> -i <dir1> -i <file>...
+
+ Database query:
+  --get_current_tags              Display tags in db of current files.
+
+ Database manipulation:
+  --id_forced_remove              Force remove current files from db.
+  --tag_forced_album "text"       Force album name.
+  --tag_forced_artist "text"      Force artist name.
+  --tag_forced_system "text"      Force system name.
+  --tag_forced_etitle "integer"   Force remove N character at the end of title.
+  --tag_forced_stitle "integer"   Force remove N character at beginning of title.
+
    Be careful with forced, no selection = recursive action.
 ```
 
