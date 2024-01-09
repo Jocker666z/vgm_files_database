@@ -1065,7 +1065,7 @@ while [[ $# -gt 0 ]]; do
 			usage
 			exit
 		;;
-		--get_current_tags)
+		-gt|--get_current_tags)
 			get_current_tags="1"
 		;;
 		-i|--input)
