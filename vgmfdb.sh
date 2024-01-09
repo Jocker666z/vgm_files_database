@@ -71,7 +71,7 @@ kill () {
 local time_formated
 
 # Print stats
-if [[ "${SECONDS}" -gt "120" ]]; then
+if [[ "${SECONDS}" -gt "59" ]]; then
 	time_formated="$((SECONDS/3600))h$((SECONDS%3600/60))m$((SECONDS%60))s"
 	echo "Total duration of operation is ${time_formated}".
 else
@@ -91,23 +91,23 @@ Usage: vgmfdb [options]
   -h|--help                       Display this help.
 
  Files search:
-                                  Without option inplace recursively add files in db.
-  -i|--input <directory/file>     Target search directory or file.
-  --input_filter_type "ext0|ext1" Selects only the given file extension(s).
+                                      Without option inplace recursively add files in db.
+  -i|--input <directory/file>         Target search directory or file.
+  -ft|--filter_type "ext0|ext1"       Selects only the given file extension(s).
 
    -i is cumulative: -i <dir0> -i <dir1> -i <file>...
 
  Database query:
-  --get_current_tags              Display tags in db of current files.
+  -gt|--get_current_tags              Display tags in db of current files.
 
  Database manipulation:
-  --id_forced_remove              Force remove current files from db.
-  --tag_forced_album "text"       Force album name.
-  --tag_forced_artist "text"      Force artist name.
-  --tag_forced_system "text"      Force system name.
-  --tag_forced_title "text"       Force title name.
-  --tag_forced_etitle "integer"   Force remove N character at the end of title.
-  --tag_forced_stitle "integer"   Force remove N character at beginning of title.
+  -idrm|--id_forced_remove            Force remove current files from db.
+  -tfal|--tag_forced_album "text"     Force album name.
+  -tfar|--tag_forced_artist "text"    Force artist name.
+  -tfs|--tag_forced_system "text"     Force system name.
+  -tft|--tag_forced_title "text"      Force title name.
+  -tfte|--tag_forced_etitle "integer" Force remove N character at the end of title.
+  -tfts|--tag_forced_stitle "integer" Force remove N character at beginning of title.
 
    Be careful with forced, no selection = recursive action.
 EOF
@@ -1079,10 +1079,19 @@ while [[ $# -gt 0 ]]; do
 				fi
 			done
 		;;
-		--id_forced_remove)
+		-ft|--filter_type)
+			shift
+			input_filter_type="$1"
+			if [[ -z "$input_filter_type" ]]; then
+				echo_error "vgmfdb was breaked."
+				echo_error "Type of file (extension) must be filled."
+				exit
+			fi
+		;;
+		-idrm|--id_forced_remove)
 			id_forced_remove="1"
 		;;
-		--tag_forced_album)
+		-tfal|--tag_forced_album)
 			shift
 			tag_forced_album="$1"
 			if [[ -z "$tag_forced_album" ]]; then
@@ -1093,7 +1102,7 @@ while [[ $# -gt 0 ]]; do
 				tag_forced="1"
 			fi
 		;;
-		--tag_forced_artist)
+		-tfar|--tag_forced_artist)
 			shift
 			tag_forced_artist="$1"
 			if [[ -z "$tag_forced_artist" ]]; then
@@ -1104,7 +1113,7 @@ while [[ $# -gt 0 ]]; do
 				tag_forced="1"
 			fi
 		;;
-		--tag_forced_system)
+		-tfs|--tag_forced_system)
 			shift
 			tag_forced_system="$1"
 			if [[ -z "$tag_forced_system" ]]; then
@@ -1115,7 +1124,7 @@ while [[ $# -gt 0 ]]; do
 				tag_forced="1"
 			fi
 		;;
-		--tag_forced_title)
+		-tft|--tag_forced_title)
 			shift
 			tag_forced_title="$1"
 			if [[ -z "$tag_forced_title" ]]; then
@@ -1126,7 +1135,7 @@ while [[ $# -gt 0 ]]; do
 				tag_forced="1"
 			fi
 		;;
-		--tag_forced_etitle)
+		-tfte|--tag_forced_etitle)
 			shift
 			tag_forced_etitle="$1"
 			if [[ -z "$tag_forced_etitle" ]] \
@@ -1138,7 +1147,7 @@ while [[ $# -gt 0 ]]; do
 				tag_forced="1"
 			fi
 		;;
-		--tag_forced_stitle)
+		-tfts|--tag_forced_stitle)
 			shift
 			tag_forced_stitle="$1"
 			if [[ -z "$tag_forced_stitle" ]] \
@@ -1148,15 +1157,6 @@ while [[ $# -gt 0 ]]; do
 				exit
 			else
 				tag_forced="1"
-			fi
-		;;
-		--input_filter_type)
-			shift
-			input_filter_type="$1"
-			if [[ -z "$input_filter_type" ]]; then
-				echo_error "vgmfdb was breaked."
-				echo_error "Type of file (extension) must be filled."
-				exit
 			fi
 		;;
 		*)

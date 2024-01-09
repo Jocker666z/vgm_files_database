@@ -6,23 +6,23 @@ Usage: vgmfdb [options]
   -h|--help                       Display this help.
 
  Files search:
-                                  Without option inplace recursively add files in db.
-  -i|--input <directory/file>     Target search directory or file.
-  --input_filter_type "ext0|ext1" Selects only the given file extension(s).
+                                      Without option inplace recursively add files in db.
+  -i|--input <directory/file>         Target search directory or file.
+  -ft|--filter_type "ext0|ext1"       Selects only the given file extension(s).
 
    -i is cumulative: -i <dir0> -i <dir1> -i <file>...
 
  Database query:
-  --get_current_tags              Display tags in db of current files.
+  -gt|--get_current_tags              Display tags in db of current files.
 
  Database manipulation:
-  --id_forced_remove              Force remove current files from db.
-  --tag_forced_album "text"       Force album name.
-  --tag_forced_artist "text"      Force artist name.
-  --tag_forced_system "text"      Force system name.
-  --tag_forced_title "text"       Force title name.
-  --tag_forced_etitle "integer"   Force remove N character at the end of title.
-  --tag_forced_stitle "integer"   Force remove N character at beginning of title.
+  -idrm|--id_forced_remove            Force remove current files from db.
+  -tfal|--tag_forced_album "text"     Force album name.
+  -tfar|--tag_forced_artist "text"    Force artist name.
+  -tfs|--tag_forced_system "text"     Force system name.
+  -tft|--tag_forced_title "text"      Force title name.
+  -tfte|--tag_forced_etitle "integer" Force remove N character at the end of title.
+  -tfts|--tag_forced_stitle "integer" Force remove N character at beginning of title.
 
    Be careful with forced, no selection = recursive action.
 ```
