@@ -134,12 +134,10 @@ fi
 
 # Change IFS
 IFS=$'\n'
-
 for input in "${input_dir[@]}"; do
 	input_realpath=$(realpath "$input")
 	lst_vgm+=( $(find "${input_realpath}" -type f -regextype posix-egrep -iregex '.*\.('$ext_all')$') )
 done
-
 # Reset IFS
 IFS="$oldIFS"
 
@@ -244,10 +242,12 @@ if [[ -z "$id_forced_remove" ]] \
 	# Limit clean at the directory selected 
 	for input in "${input_dir[@]}"; do
 		input=$(realpath "$input")
-		mapfile -t clear_id_lst < <(sqlite3 "$vgmfdb_database" \
-									"SELECT id FROM vgm WHERE path \
-									LIKE '${input//\'/$damn}%'")
+		mapfile -t -O "${#clear_id_lst[@]}" clear_id_lst \
+			< <(sqlite3 "$vgmfdb_database" \
+					"SELECT id FROM vgm WHERE path \
+					LIKE '${input//\'/$damn}%'")
 	done
+
 	# List orphan/removed
 	mapfile -t clear_id_lst < <(printf '%s\n' "${clear_id_lst[@]}" "${add_id_lst[@]}" \
 								| sort | uniq -u)
