@@ -107,6 +107,7 @@ Usage: vgmfdb [options]
   -tfar|--tag_forced_artist "text"    Force artist name.
   -tfs|--tag_forced_system "text"     Force system name.
   -tft|--tag_forced_title "text"      Force title name.
+  -tftf|--tag_forced_ftitle           Force title name as filename.
   -tfte|--tag_forced_etitle "integer" Force remove N character at the end of title.
   -tfts|--tag_forced_stitle "integer" Force remove N character at beginning of title.
   -tftp|--tag_forced_ptitle "text"    Force remove a pattern in title.
@@ -418,6 +419,29 @@ if [[ -n "$tag_forced_ptitle" ]]; then
 	fi
 fi
 }
+db_force_update_ftitle() {
+if [[ -n "$tag_forced_ftitle" ]]; then
+	local id
+	local title
+	local damn
+	id="$1"
+	# Quote sub
+	damn="''"
+
+	title=$(sqlite3 "$vgmfdb_database" "SELECT title \
+			FROM vgm WHERE id = '${id}'")
+	tag_title="${file##*/}"
+	tag_title="${tag_title%.*}"
+
+	if [[ "$tag_title" != "$title" ]]; then
+		sqlite3 "$vgmfdb_database" "UPDATE vgm SET title = '${tag_title//\'/$damn}' WHERE id = '$id'"
+		sqlite3 "$vgmfdb_database" "UPDATE vgm SET tag_forced = 1 WHERE id = '$id'"
+		vgm_updated_true="1"
+	else
+		vgm_updated_true="0"
+	fi
+fi
+}
 
 # db query
 db_id() {
@@ -676,6 +700,10 @@ if [[ -n "$tag_forced_stitle" ]]; then
 fi
 if [[ -n "$tag_forced_ptitle" ]]; then
 	tag_title="${tag_title//$tag_forced_ptitle}"
+fi
+if [[ -n "$tag_forced_ftitle" ]]; then
+	tag_title="${file##*/}"
+	tag_title="${tag_title%.*}"
 fi
 }
 tag_openmpt() {
@@ -1042,6 +1070,7 @@ for file in "${lst_vgm[@]}"; do
 		db_force_update_stitle "$tag_id"
 		db_force_update_etitle "$tag_id"
 		db_force_update_ptitle "$tag_id"
+		db_force_update_ftitle "$tag_id"
 
 		# For print
 		if [[ "$vgm_updated_true" = "1" ]]; then
@@ -1209,6 +1238,10 @@ while [[ $# -gt 0 ]]; do
 			else
 				tag_forced="1"
 			fi
+		;;
+		-tftf|--tag_forced_ftitle)
+			tag_forced_ftitle="1"
+			tag_forced="1"
 		;;
 		*)
 			usage

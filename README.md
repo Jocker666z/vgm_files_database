@@ -22,6 +22,7 @@ Usage: vgmfdb [options]
   -tfar|--tag_forced_artist "text"    Force artist name.
   -tfs|--tag_forced_system "text"     Force system name.
   -tft|--tag_forced_title "text"      Force title name.
+  -tftf|--tag_forced_ftitle           Force title name as filename.
   -tfte|--tag_forced_etitle "integer" Force remove N character at the end of title.
   -tfts|--tag_forced_stitle "integer" Force remove N character at beginning of title.
   -tftp|--tag_forced_ptitle "text"    Force remove a pattern in title.
