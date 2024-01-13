@@ -385,6 +385,10 @@ if [[ -n "$tag_forced_etitle" ]]; then
 
 	title=$(sqlite3 "$vgmfdb_database" "SELECT title \
 			FROM vgm WHERE id = '${id}'")
+	# Prevent negative sub error
+	if [[ "${tag_forced_etitle}" -gt "${#title}" ]]; then
+		tag_forced_etitle="${#title}"
+	fi
 	title="${title:0:-${tag_forced_etitle}}"
 
 	sqlite3 "$vgmfdb_database" "UPDATE vgm SET title = '${title//\'/$damn}' WHERE id = '$id'"
@@ -660,6 +664,10 @@ if [[ -n "$tag_forced_title" ]]; then
 	tag_title="$tag_forced_title"
 fi
 if [[ -n "$tag_forced_etitle" ]]; then
+	# Prevent negative sub error
+	if [[ "${tag_forced_etitle}" -gt "${#tag_title}" ]]; then
+		tag_forced_etitle="${#tag_title}"
+	fi
 	tag_title="${tag_title:0:-${tag_forced_stitle}}"
 fi
 if [[ -n "$tag_forced_stitle" ]]; then
