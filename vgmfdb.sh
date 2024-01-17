@@ -285,8 +285,10 @@ if [[ -n "$tag_forced_album" ]]; then
 	album=$(sqlite3 "$vgmfdb_database" "SELECT album FROM vgm WHERE id = '${id}'")
 
 	if [[ "$tag_album" != "$album" ]]; then
-		sqlite3 "$vgmfdb_database" "UPDATE vgm SET album = '${tag_album//\'/$damn}' WHERE id = '$id'"
-		sqlite3 "$vgmfdb_database" "UPDATE vgm SET tag_forced = 1 WHERE id = '$id'"
+		sqlite3 "$vgmfdb_database" "UPDATE vgm SET \
+					album = '${tag_album//\'/$damn}',\
+					tag_forced = 1 \
+					WHERE id = '$id'"
 		vgm_updated_true="1"
 	else
 		vgm_updated_true="0"
@@ -305,8 +307,10 @@ if [[ -n "$tag_forced_artist" ]]; then
 	artist=$(sqlite3 "$vgmfdb_database" "SELECT artist FROM vgm WHERE id = '${id}'")
 
 	if [[ "$tag_artist" != "$artist" ]]; then
-		sqlite3 "$vgmfdb_database" "UPDATE vgm SET artist = '${tag_artist//\'/$damn}' WHERE id = '$id'"
-		sqlite3 "$vgmfdb_database" "UPDATE vgm SET tag_forced = 1 WHERE id = '$id'"
+		sqlite3 "$vgmfdb_database" "UPDATE vgm SET \
+					artist = '${tag_artist//\'/$damn}',\
+					tag_forced = 1 \
+					WHERE id = '$id'"
 		vgm_updated_true="1"
 	else
 		vgm_updated_true="0"
@@ -325,8 +329,10 @@ if [[ -n "$tag_forced_system" ]]; then
 	system=$(sqlite3 "$vgmfdb_database" "SELECT system FROM vgm WHERE id = '${id}'")
 
 	if [[ "$tag_system" != "$system" ]]; then
-		sqlite3 "$vgmfdb_database" "UPDATE vgm SET system = '${tag_system//\'/$damn}' WHERE id = '$id'"
-		sqlite3 "$vgmfdb_database" "UPDATE vgm SET tag_forced = 1 WHERE id = '$id'"
+		sqlite3 "$vgmfdb_database" "UPDATE vgm SET \
+					system = '${tag_system//\'/$damn}',\
+					tag_forced = 1 \
+					WHERE id = '$id'"
 		vgm_updated_true="1"
 	else
 		vgm_updated_true="0"
@@ -345,8 +351,10 @@ if [[ -n "$tag_forced_title" ]]; then
 	title=$(sqlite3 "$vgmfdb_database" "SELECT title FROM vgm WHERE id = '${id}'")
 
 	if [[ "$tag_title" != "$title" ]]; then
-		sqlite3 "$vgmfdb_database" "UPDATE vgm SET title = '${tag_title//\'/$damn}' WHERE id = '$id'"
-		sqlite3 "$vgmfdb_database" "UPDATE vgm SET tag_forced = 1 WHERE id = '$id'"
+		sqlite3 "$vgmfdb_database" "UPDATE vgm SET \
+					title = '${tag_title//\'/$damn}',\
+					tag_forced = 1 \
+					WHERE id = '$id'"
 		vgm_updated_true="1"
 	else
 		vgm_updated_true="0"
@@ -370,8 +378,10 @@ if [[ -n "$tag_forced_stitle" ]]; then
 	# Remove lead space
 	title="${title#"${title%%[![:space:]]*}"}"
 
-	sqlite3 "$vgmfdb_database" "UPDATE vgm SET title = '${title//\'/$damn}' WHERE id = '$id'"
-	sqlite3 "$vgmfdb_database" "UPDATE vgm SET tag_forced = 1 WHERE id = '$id'"
+	sqlite3 "$vgmfdb_database" "UPDATE vgm SET \
+				title = '${title//\'/$damn}',\
+				tag_forced = 1 \
+				WHERE id = '$id'"
 	vgm_updated_true="1"
 fi
 }
@@ -392,8 +402,10 @@ if [[ -n "$tag_forced_etitle" ]]; then
 	fi
 	title="${title:0:-${tag_forced_etitle}}"
 
-	sqlite3 "$vgmfdb_database" "UPDATE vgm SET title = '${title//\'/$damn}' WHERE id = '$id'"
-	sqlite3 "$vgmfdb_database" "UPDATE vgm SET tag_forced = 1 WHERE id = '$id'"
+	sqlite3 "$vgmfdb_database" "UPDATE vgm SET \
+				title = '${title//\'/$damn}',\
+				tag_forced = 1 \
+				WHERE id = '$id'"
 	vgm_updated_true="1"
 fi
 }
@@ -411,8 +423,10 @@ if [[ -n "$tag_forced_ptitle" ]]; then
 	title="${title//$tag_forced_ptitle}"
 
 	if [[ "$tag_title" != "$title" ]]; then
-		sqlite3 "$vgmfdb_database" "UPDATE vgm SET title = '${title//\'/$damn}' WHERE id = '$id'"
-		sqlite3 "$vgmfdb_database" "UPDATE vgm SET tag_forced = 1 WHERE id = '$id'"
+		sqlite3 "$vgmfdb_database" "UPDATE vgm SET \
+					title = '${title//\'/$damn}',\
+					tag_forced = 1 \
+					WHERE id = '$id'"
 		vgm_updated_true="1"
 	else
 		vgm_updated_true="0"
@@ -434,8 +448,10 @@ if [[ -n "$tag_forced_ftitle" ]]; then
 	tag_title="${tag_title%.*}"
 
 	if [[ "$tag_title" != "$title" ]]; then
-		sqlite3 "$vgmfdb_database" "UPDATE vgm SET title = '${tag_title//\'/$damn}' WHERE id = '$id'"
-		sqlite3 "$vgmfdb_database" "UPDATE vgm SET tag_forced = 1 WHERE id = '$id'"
+		sqlite3 "$vgmfdb_database" "UPDATE vgm SET \
+					title = '${title//\'/$damn}',\
+					tag_forced = 1 \
+					WHERE id = '$id'"
 		vgm_updated_true="1"
 	else
 		vgm_updated_true="0"
