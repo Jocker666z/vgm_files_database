@@ -1266,7 +1266,7 @@ while [[ $# -gt 0 ]]; do
 	esac
 	shift
 done
-set -x
+
 ext_adlib="adl|amd|bam|cff|cmf|d00|dfm|ddt|dmo|dtm|got|hsc|hsq|imf|laa|ksm|m|mdi|mtk|rad|rol|sdb|sqx|wlf|xms|xsm"
 ext_c64="sid|prg"
 ext_sc68="sc68|snd|sndh"
