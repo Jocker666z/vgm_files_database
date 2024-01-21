@@ -465,9 +465,34 @@ mapfile -t dbquery_id_lst < <(sqlite3 "$vgmfdb_database" "SELECT id FROM vgm")
 }
 db_get_current_tags() {
 local oldIFS
+local term_width
+local term_width_default
+local column_width_default
+local column_width_delta
+
+screen_adapt() {
+term_width=$(stty size)
+term_width="${term_width##* }"
+term_width_default="140"
+column_width_default="24"
+
+if [[ "$term_width" -gt "$term_width_default" ]]; then
+column_width_delta=$(( term_width - term_width_default ))
+column_width_delta=$(( column_width_delta / 5 ))
+column_width_default=$(( column_width_default + column_width_delta ))
+elif [[ "$term_width" -lt "$term_width_default" ]]; then
+column_width_delta=$(( term_width_default - term_width ))
+column_width_delta=$(( column_width_delta / 5 ))
+column_width_default=$(( column_width_default - column_width_delta ))
+fi
+}
 
 if [[ -n "$get_current_tags" ]] \
 && [[ -z "$id_forced_remove" ]]; then
+
+	# Store IFS
+	oldIFS="$IFS"
+
 	# Change IFS
 	IFS=$'\n'
 	for value in "${add_id_lst[@]}"; do
@@ -479,10 +504,18 @@ if [[ -n "$get_current_tags" ]] \
 	IFS="$oldIFS"
 
 	# Print tag
+	screen_adapt
 	echo "--------------------------"
 	printf '%s\n' "${lst_db_get_current_tags[@]}" \
-		| sort -t$'|' -k 4 -V \
-		| column -T 1,3 -s $'|' -t -o ' | ' -N "Current files tags,title,artist,album,system,type"
+	| sort -t$'|' -k 4 -V \
+	| awk -v a=$column_width_default -F'|' '
+		BEGIN { OFS = FS }
+		{ $1 = substr($1, 1, a)}
+		{ $2 = substr($2, 1, a)}
+		{ $3 = substr($3, 1, a)}
+		{ $4 = substr($4, 1, a)}
+		{ $5 = substr($5, 1, a); print }' \
+	| column -t -s $'|' -o ' | ' -N "Current files,title,artist,album,system,type"
 	echo "--------------------------"
 fi
 }
