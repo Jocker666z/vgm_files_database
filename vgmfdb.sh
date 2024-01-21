@@ -1047,9 +1047,9 @@ for file in "${lst_vgm[@]}"; do
 
 		# file tags
 		tag_openmpt "$ext"
+		tag_sap "$ext"
 		tag_sid "$ext"
 		tag_sc68 "$ext"
-		tag_sap "$ext"
 		tag_spc "$ext"
 		tag_vgm "$ext"
 		tag_vgmstream "$ext"
@@ -1266,7 +1266,7 @@ while [[ $# -gt 0 ]]; do
 	esac
 	shift
 done
-
+set -x
 ext_adlib="adl|amd|bam|cff|cmf|d00|dfm|ddt|dmo|dtm|got|hsc|hsq|imf|laa|ksm|m|mdi|mtk|rad|rol|sdb|sqx|wlf|xms|xsm"
 ext_c64="sid|prg"
 ext_sc68="sc68|snd|sndh"
@@ -1278,7 +1278,7 @@ ext_various="ay|ams|dmf|dtt|hvl|mdx|mid|rmt|s98|sap|v2m|vt2|vtx|xrns|ym"
 ext_vgm="vgm|vgz"
 ext_vgmstream_0_c="22k|8svx|acb|acm|ad|ads|adp|adpcm|adx|aix|akb|asf|apc|at3|at9|awb|bcstm|bcwav|bfstm|bfwav|bik|brstm|bwav|cfn|ckd|cmp|csb|csmp|cps"
 ext_vgmstream_d_n="dsm|dsp|dvi|fsb|gcm|genh|h4m|hca|hps|ifs|imc|int|isd|ivs|kma|kvs|lac3|lbin|lmp3|logg|lopus|lstm|lwav|mab|mca|mic|msf|mus|musx|nlsd|nop|npsf"
-ext_vgmstream_o_z="oma|ras|rsd|rsnd|rws|sad|scd|sfx|sgd|snd|ss2|str|strm|svag|p04|p16|pcm|psb|thp|trk|trs|txtp|ulw|vag|vas|vig|vgmstream|voi|wem|xa|xai|xma|xnb|xwv"
+ext_vgmstream_o_z="oma|ras|rsd|rsnd|rws|sad|sap|scd|sfx|sgd|snd|ss2|str|strm|svag|p04|p16|pcm|psb|thp|trk|trs|txtp|ulw|vag|vas|vig|vgmstream|voi|wem|xa|xai|xma|xnb|xwv"
 ext_vgmstream="${ext_vgmstream_0_c}|${ext_vgmstream_d_n}|${ext_vgmstream_o_z}"
 ext_xmp="669|amf|dbm|digi|dsm|dsym|far|gz|mdl|musx|psm"
 ext_xsf="2sf|dsf|gsf|psf|psf2|mini2sf|minigsf|minipsf|minipsf2|minissf|miniusf|minincsf|ncsf|ssf|usf"
