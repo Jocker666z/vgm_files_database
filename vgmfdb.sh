@@ -195,9 +195,12 @@ damn2="’’"
 
 # Replace / by - ; cause display error
 tag_title="${tag_title//\//-}"
+tag_title="${tag_title//\|/-}"
 tag_artist="${tag_artist//\//-}"
+tag_artist="${tag_artist//\|/-}"
 tag_album="${tag_album//\//-}"
-tag_system="${tag_system//\//-}"
+tag_album="${tag_album//\|/-}"
+tag_system="${tag_system//\|/-}"
 
 sqlite3 "$vgmfdb_database" <<EOF
 INSERT OR IGNORE INTO vgm (\
@@ -804,6 +807,7 @@ if echo "|${ext_tracker_openmpt}|" | grep -i "|${ext}|" &>/dev/null \
 			tag_system=$(< "$temp_cache_tags" grep "Type.......:" \
 						| awk -F'[()]' '{print $2}')
 		fi
+		tag_system="${tag_system//or compatible}"
 
 		# Duration
 		duration_record=$(< "$temp_cache_tags" grep "Duration." \
