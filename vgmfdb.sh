@@ -70,12 +70,17 @@ echo "${error_label}" >&2
 kill () {
 local time_formated
 
+if [[ ! "${lst_vgm[@]}" ]] \
+&& [[ ! "${clear_id_lst[@]}" ]]; then
+	echo "Nothing to do here."
+fi
+
 # Print stats
 if [[ "${SECONDS}" -gt "59" ]]; then
-	time_formated="$((SECONDS/3600))h$((SECONDS%3600/60))m$((SECONDS%60))s"
-	echo "Total duration of operation is ${time_formated}".
+	time_formated="$((SECONDS/3600))h$((SECONDS%3600/60))m$((SECONDS%60))s."
+	echo "Total duration of operation is ${time_formated}."
 else
-	echo "Total duration of operation is ${SECONDS}s".
+	echo "Total duration of operation is ${SECONDS}s."
 fi
 
 rm "$temp_cache_tags" &>/dev/null
@@ -142,8 +147,12 @@ done
 # Reset IFS
 IFS="$oldIFS"
 
-# Remove duplicate
-mapfile -t lst_vgm <  <(printf '%s\n' "${lst_vgm[@]}" | sort -u)
+if [[ ! "${lst_vgm[@]}" ]]; then
+	unset lst_vgm
+else
+	# Remove duplicate
+	mapfile -t lst_vgm <  <(printf '%s\n' "${lst_vgm[@]}" | sort -u)
+fi
 }
 
 # db change
@@ -253,21 +262,28 @@ if [[ -z "$id_forced_remove" ]] \
 	mapfile -t clear_id_lst < <(printf '%s\n' "${clear_id_lst[@]}" "${add_id_lst[@]}" \
 								| sort | uniq -u)
 
-	for value in "${clear_id_lst[@]}"; do
+	if [[ "${clear_id_lst[@]}" ]]; then
 
-		sqlite3 "$vgmfdb_database" "DELETE FROM vgm WHERE id = '${value}'"
-		vgm_removed=$(( vgm_removed + 1 ))
-
-		# Print
-		tput bold sitm
-		echo -e " Purge; clean files in db \u2933 $vgm_removed"
-		tput sgr0
-		# Cursor up 1 lines
-		if [[ "$vgm_removed" != "${#clear_id_lst[@]}" ]]; then
-			printf "\033[1A"
+		if [[ ! "${lst_vgm[@]}" ]]; then
+			echo "vgmfdb"
 		fi
 
-	done
+		for value in "${clear_id_lst[@]}"; do
+
+			sqlite3 "$vgmfdb_database" "DELETE FROM vgm WHERE id = '${value}'"
+			vgm_removed=$(( vgm_removed + 1 ))
+
+			# Print
+			tput bold sitm
+			echo -e " Purge; clean files in db \u2933 $vgm_removed"
+			tput sgr0
+			# Cursor up 1 lines
+			if [[ "$vgm_removed" != "${#clear_id_lst[@]}" ]]; then
+				printf "\033[1A"
+			fi
+
+		done
+	fi
 
 fi
 
@@ -488,6 +504,7 @@ fi
 }
 
 if [[ -n "$get_current_tags" ]] \
+&& [[ "${lst_vgm[@]}" ]] \
 && [[ -z "$id_forced_remove" ]]; then
 
 	# Store IFS
