@@ -200,6 +200,7 @@ tag_artist="${tag_artist//\//-}"
 tag_artist="${tag_artist//\|/-}"
 tag_album="${tag_album//\//-}"
 tag_album="${tag_album//\|/-}"
+tag_system="${tag_system//\//-}"
 tag_system="${tag_system//\|/-}"
 
 sqlite3 "$vgmfdb_database" <<EOF
