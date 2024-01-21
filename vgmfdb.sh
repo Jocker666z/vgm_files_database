@@ -809,6 +809,9 @@ if echo "|${ext_tracker_openmpt}|" | grep -i "|${ext}|" &>/dev/null \
 						| awk -F'[()]' '{print $2}')
 		fi
 		tag_system="${tag_system// or compatible}"
+		tag_system="${tag_system//-compatible Tracker}"
+		tag_system="${tag_system// (compatibility export)}"
+		tag_system="${tag_system// (test build)}"
 
 		# Duration
 		duration_record=$(< "$temp_cache_tags" grep "Duration." \
