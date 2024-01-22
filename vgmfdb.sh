@@ -469,7 +469,7 @@ if [[ -n "$tag_forced_ftitle" ]]; then
 
 	if [[ "$tag_title" != "$title" ]]; then
 		sqlite3 "$vgmfdb_database" "UPDATE vgm SET \
-					title = '${title//\'/$damn}',\
+					title = '${tag_title//\'/$damn}',\
 					tag_forced = 1 \
 					WHERE id = '$id'"
 		vgm_updated_true="1"
