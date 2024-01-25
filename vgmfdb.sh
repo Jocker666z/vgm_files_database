@@ -776,6 +776,24 @@ if [[ -n "$tag_forced_ftitle" ]]; then
 	tag_title="${tag_title%.*}"
 fi
 }
+tag_vgmfdb_nfo() {
+vgmfdb_nfo="${file%/*}/vgmfdb.nfo"
+
+if [[ -f "$vgmfdb_nfo" ]]; then
+	if [[ -z "$tag_album" ]]; then
+		tag_album=$(< "$vgmfdb_nfo" grep "album=" \
+						| cut -d'=' -f2-)
+	fi
+	if [[ -z "$tag_artist" ]]; then
+		tag_artist=$(< "$vgmfdb_nfo" grep "artist=" \
+						| cut -d'=' -f2-)
+	fi
+	if [[ -z "$tag_system" ]]; then
+		tag_system=$(< "$vgmfdb_nfo" grep "system=" \
+						| cut -d'=' -f2-)
+	fi
+fi
+}
 tag_openmpt() {
 local ext
 local openmpt123_test_result
@@ -1115,6 +1133,7 @@ for file in "${lst_vgm[@]}"; do
 		tag_xsf "$ext"
 
 		# Add missing tags
+		tag_vgmfdb_nfo
 		tag_default "$file"
 
 		# Tag type of file

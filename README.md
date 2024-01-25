@@ -43,8 +43,15 @@ By default the tags are taken with the filename and the directory that contains 
 * `xmp`: present in many official repositories
 * `xxd`: present in many official repositories
 
-## Supported Files
+## vgmfdb.nfo usage
+It is possible to tag all files in a directory with a `vgmfdb.nfo` file (must be in the same directory as the files to be tagged). This file can contain the artist, album (games) and system. See example below.
+```
+artist=David Whittaker
+album=Xenon 2 - Megablast
+system=Amiga
+```
 
+## Supported Files
 * AdLib
 	* `adl|amd|bam|cff|cmf|d00|dfm|ddt|dmo|dtm|got|hsc|hsq|imf|laa|ksm|m|mdi|mtk|rad|rol|sdb|sqx|wlf|xms|xsm`
 * Atari 8-bits
