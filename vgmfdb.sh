@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2207
+# shellcheck disable=SC2086,SC2207
 # vgmfdb
 # Bash script for populate sqlite database with vgm
 #
@@ -70,8 +70,8 @@ echo "${error_label}" >&2
 kill () {
 local time_formated
 
-if [[ ! "${lst_vgm[@]}" ]] \
-&& [[ ! "${clear_id_lst[@]}" ]]; then
+if ! (( "${lst_vgm[@]}" )) \
+&& ! (( "${clear_id_lst[@]}" )); then
 	echo "Nothing to do here."
 fi
 
@@ -147,7 +147,7 @@ done
 # Reset IFS
 IFS="$oldIFS"
 
-if [[ ! "${lst_vgm[@]}" ]]; then
+if ! (( "${lst_vgm[@]}" )); then
 	unset lst_vgm
 else
 	# Remove duplicate
@@ -191,7 +191,6 @@ local damn
 
 # Quote sub
 damn="''"
-damn2="’’"
 
 # Replace / by - ; cause display error
 tag_title="${tag_title//\//-}"
@@ -266,9 +265,9 @@ if [[ -z "$id_forced_remove" ]] \
 	mapfile -t clear_id_lst < <(printf '%s\n' "${clear_id_lst[@]}" "${add_id_lst[@]}" \
 								| sort | uniq -u)
 
-	if [[ "${clear_id_lst[@]}" ]]; then
+	if (( "${clear_id_lst[@]}" )); then
 
-		if [[ ! "${lst_vgm[@]}" ]]; then
+		if ! (( "${lst_vgm[@]}" )); then
 			echo "vgmfdb"
 		fi
 
@@ -508,7 +507,7 @@ fi
 }
 
 if [[ -n "$get_current_tags" ]] \
-&& [[ "${lst_vgm[@]}" ]] \
+&& (( "${lst_vgm[@]}" )) \
 && [[ -z "$id_forced_remove" ]]; then
 
 	# Store IFS
@@ -826,6 +825,7 @@ if echo "|${ext_tracker_openmpt}|" | grep -i "|${ext}|" &>/dev/null \
 			tag_system=$(< "$temp_cache_tags" grep "Type.......:" \
 						| awk -F'[()]' '{print $2}')
 		fi
+		# Remove useless extra
 		tag_system="${tag_system// or compatible}"
 		tag_system="${tag_system//-compatible Tracker}"
 		tag_system="${tag_system// (compatibility export)}"
