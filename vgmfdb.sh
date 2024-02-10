@@ -815,11 +815,14 @@ if echo "|${ext_tracker_openmpt}|" | grep -i "|${ext}|" &>/dev/null \
 			> "$temp_cache_tags"
 
 		tag_title=$(< "$temp_cache_tags" grep "Title." \
-					| awk -F'.: ' '{print $NF}' | awk '{$1=$1};1')
+					| awk -F'.: ' '{print $NF}' \
+					| awk '{$1=$1};1')
 		tag_artist=$(< "$temp_cache_tags" grep "Artist." \
-					| awk -F'.: ' '{print $NF}' | awk '{$1=$1};1')
+					| awk -F'.: ' '{print $NF}' \
+					| awk '{$1=$1};1')
 		tag_system=$(< "$temp_cache_tags" grep "Tracker....:" \
-					| awk -F'.: ' '{print $NF}' | awk '{$1=$1};1')
+					| awk -F'.: ' '{print $NF}' \
+					| awk '{$1=$1};1')
 		if [[ "${tag_system}" = "Unknown" ]] \
 		|| [[ "${tag_system}" = "..converted.." ]]; then
 			tag_system=$(< "$temp_cache_tags" grep "Type.......:" \
@@ -835,10 +838,13 @@ if echo "|${ext_tracker_openmpt}|" | grep -i "|${ext}|" &>/dev/null \
 		duration_record=$(< "$temp_cache_tags" grep "Duration." \
 							| awk '{print $2}')
 		if [[ "$duration_record" == *":"* ]]; then
-			minute=$(echo "$duration_record" | awk -F ":" '{print $1}' \
+			minute=$(echo "$duration_record" \
+					| awk -F ":" '{print $1}' \
 					| sed 's/^0*//' )
-			second=$(echo "$duration_record" | awk -F ":" '{print $2}' \
-					| awk '{print int($1+0.5)}' | sed 's/^0*//')
+			second=$(echo "$duration_record" \
+					| awk -F ":" '{print $2}' \
+					| awk '{print int($1+0.5)}' \
+					| sed 's/^0*//')
 			if [[ -n "$minute" ]]; then
 				minute=$((minute*60))
 			fi
@@ -863,18 +869,23 @@ if echo "|${ext_tracker_openmpt}|" | grep -i "|${ext}|" &>/dev/null \
 		"$xmp_bin" --load-only "$file" &> "$temp_cache_tags"
 
 		tag_title=$(< "$temp_cache_tags" grep "Module name" \
-					| awk -F': ' '{print $NF}' | awk '{$1=$1};1')
+					| awk -F': ' '{print $NF}' \
+					| awk '{$1=$1};1')
 		tag_system=$(< "$temp_cache_tags" grep "Module type" \
-					| awk -F': ' '{print $NF}' | awk '{$1=$1};1')
+					| awk -F': ' '{print $NF}' \
+					| awk '{$1=$1};1')
 		# Duration
 		duration_record=$(< "$temp_cache_tags" grep "Duration" \
 							| awk -F ":" '{print $2}')
 		duration_record="${duration_record//s/}"
 		if [[ "$duration_record" == *"min"* ]]; then
-			minute=$(echo "$duration_record" | awk -F "min" '{print $1}' \
+			minute=$(echo "$duration_record" \
+					| awk -F "min" '{print $1}' \
 					| sed 's/^0*//' )
-			second=$(echo "$duration_record" | awk -F "min" '{print $2}' \
-					| awk '{print int($1+0.5)}' | sed 's/^0*//')
+			second=$(echo "$duration_record" \
+					| awk -F "min" '{print $2}' \
+					| awk '{print int($1+0.5)}' \
+					| sed 's/^0*//')
 			if [[ -n "$minute" ]]; then
 				minute=$((minute*60))
 			fi
@@ -893,11 +904,13 @@ if [[ "$ext" = "sap" ]]; then
 	strings -e S "$file" | head -15 > "$temp_cache_tags"
 
 	# file tags
-	tag_artist=$(< "$temp_cache_tags" grep -i -a "AUTHOR" | awk -F'"' '$0=$2')
+	tag_artist=$(< "$temp_cache_tags" grep -i -a "AUTHOR" \
+				| awk -F'"' '$0=$2')
 	if [[ "$tag_artist" = "<?>" ]]; then
 		unset tag_artist
 	fi
-	tag_album=$(< "$temp_cache_tags" grep -i -a "NAME" | awk -F'"' '$0=$2')
+	tag_album=$(< "$temp_cache_tags" grep -i -a "NAME" \
+				| awk -F'"' '$0=$2')
 	if [[ "$tag_album" = "<?>" ]]; then
 		unset tag_album
 	fi
@@ -920,15 +933,15 @@ if echo "|${ext_sc68}|" | grep -i "|${ext}|" &>/dev/null \
 
 		# file tags
 		tag_title=$(< "$temp_cache_tags" grep -i -a title: \
-					| sed 's/^.*: //' | head -1)
-		if [[ -z "$tag_title" ]] \
-		|| [[ "$tag_title" = "N/A" ]]; then
+					| sed 's/^.*: //' \
+					| head -1)
+		if [[ "$tag_title" = "N/A" ]]; then
 			unset tag_title
 		fi
 		tag_artist=$(< "$temp_cache_tags" grep -i -a artist: \
-					| sed 's/^.*: //' | head -1)
-		if [[ -z "$tag_artist" ]] \
-		|| [[ "$tag_artist" = "N/A" ]]; then
+					| sed 's/^.*: //' \
+					| head -1)
+		if [[ "$tag_artist" = "N/A" ]]; then
 			unset tag_artist
 		fi
 		tag_system="SC68"
@@ -968,16 +981,24 @@ if [[ "$ext" = "spc" ]] \
 && [[ -n "$xxd_bin" ]]; then
 	# file tags
 	tag_title=$("$xxd_bin" -ps -s 0x0002Eh -l 32 "$file" \
-				| tr -d '[:space:]' | xxd -r -p | tr -d '\0')
+				| tr -d '[:space:]' \
+				| xxd -r -p \
+				| tr -d '\0')
 	tag_artist=$("$xxd_bin" -ps -s 0x000B1h -l 32 "$file" \
-				| tr -d '[:space:]' | xxd -r -p | tr -d '\0')
+				| tr -d '[:space:]' \
+				| xxd -r -p \
+				| tr -d '\0')
 	tag_album=$("$xxd_bin" -ps -s 0x0004Eh -l 32 "$file" \
-				| tr -d '[:space:]' | xxd -r -p | tr -d '\0')
+				| tr -d '[:space:]' \
+				| xxd -r -p \
+				| tr -d '\0')
 	tag_frequency="32000"
 	spc_duration=$(xxd -ps -s 0x000A9h -l 3 "$file" \
-					| xxd -r -p | tr -d '\0')
+					| xxd -r -p \
+					| tr -d '\0')
 	spc_fading=$(xxd -ps -s 0x000ACh -l 5 "$file" \
-				| xxd -r -p | tr -d '\0')
+				| xxd -r -p \
+				| tr -d '\0')
 	# Correction if empty, or not an integer
 	if [[ -z "$spc_duration" ]] || ! [[ "$spc_duration" =~ ^[0-9]*$ ]]; then
 		spc_duration="0"
@@ -1033,7 +1054,7 @@ if echo "|${ext_vgmstream}|" | grep -i "|${ext}|" &>/dev/null \
 		tag_frequency=$(< "$temp_cache_tags" grep "sample rate:" \
 						| awk '{print $3}')
 		tag_duration=$(echo "scale=4;$sample_duration/$tag_frequency" \
-							| bc | awk '{print int($1+0.5)}')
+						| bc | awk '{print int($1+0.5)}')
 	fi
 fi
 }
@@ -1049,18 +1070,23 @@ if echo "|${ext_xmp}|" | grep -i "|${ext}|" &>/dev/null \
 	"$xmp_bin" --load-only "$file" &> "$temp_cache_tags"
 
 	tag_title=$(< "$temp_cache_tags" grep "Module name" \
-				| awk -F': ' '{print $NF}' | awk '{$1=$1};1')
+				| awk -F': ' '{print $NF}' \
+				| awk '{$1=$1};1')
 	tag_system=$(< "$temp_cache_tags" grep "Module type" \
-				| awk -F': ' '{print $NF}' | awk '{$1=$1};1')
+				| awk -F': ' '{print $NF}' \
+				| awk '{$1=$1};1')
 	# Duration
 	duration_record=$(< "$temp_cache_tags" grep "Duration" \
 						| awk -F ":" '{print $2}')
 	duration_record="${duration_record//s/}"
 	if [[ "$duration_record" == *"min"* ]]; then
-		minute=$(echo "$duration_record" | awk -F "min" '{print $1}' \
+		minute=$(echo "$duration_record" \
+				| awk -F "min" '{print $1}' \
 				| sed 's/^0*//' )
-		second=$(echo "$duration_record" | awk -F "min" '{print $2}' \
-				| awk '{print int($1+0.5)}' | sed 's/^0*//')
+		second=$(echo "$duration_record" \
+				| awk -F "min" '{print $2}' \
+				| awk '{print int($1+0.5)}' \
+				| sed 's/^0*//')
 		if [[ -n "$minute" ]]; then
 			minute=$((minute*60))
 		fi
@@ -1080,10 +1106,14 @@ if echo "|${ext_xsf}|" | grep -i "|${ext}|" &>/dev/null; then
 	| sed -n '/TAG/,$p' > "$temp_cache_tags"
 
 	# file tags
-	tag_title=$(< "$temp_cache_tags" grep -i -a title= | awk -F'=' '$0=$NF')
-	tag_artist=$(< "$temp_cache_tags" grep -i -a artist= | awk -F'=' '$0=$NF')
-	tag_album=$(< "$temp_cache_tags" grep -i -a game= | awk -F'=' '$0=$NF')
-	tag_duration=$(< "$temp_cache_tags" grep -i -a length= | awk -F'=' '$0=$NF' \
+	tag_title=$(< "$temp_cache_tags" grep -i -a title= \
+				| awk -F'=' '$0=$NF')
+	tag_artist=$(< "$temp_cache_tags" grep -i -a artist= \
+				| awk -F'=' '$0=$NF')
+	tag_album=$(< "$temp_cache_tags" grep -i -a game= \
+				| awk -F'=' '$0=$NF')
+	tag_duration=$(< "$temp_cache_tags" grep -i -a length= \
+					| awk -F'=' '$0=$NF' \
 					| awk -F '.' 'NF > 1 { printf "%s", $1; exit } 1' \
 					| awk -F":" '{ print ($1 * 60) + $2 }' \
 					| tr -d '[:space:]')
