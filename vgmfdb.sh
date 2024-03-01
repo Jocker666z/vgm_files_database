@@ -70,8 +70,8 @@ echo "${error_label}" >&2
 kill () {
 local time_formated
 
-if ! (( "${lst_vgm[@]}" )) \
-&& ! (( "${clear_id_lst[@]}" )); then
+if ! (( "${#lst_vgm[@]}" )) \
+&& ! (( "${#clear_id_lst[@]}" )); then
 	echo "Nothing to do here."
 fi
 
@@ -147,7 +147,7 @@ done
 # Reset IFS
 IFS="$oldIFS"
 
-if ! (( "${lst_vgm[@]}" )); then
+if ! (( "${#lst_vgm[@]}" )); then
 	unset lst_vgm
 else
 	# Remove duplicate
@@ -265,9 +265,9 @@ if [[ -z "$id_forced_remove" ]] \
 	mapfile -t clear_id_lst < <(printf '%s\n' "${clear_id_lst[@]}" "${add_id_lst[@]}" \
 								| sort | uniq -u)
 
-	if (( "${clear_id_lst[@]}" )); then
+	if (( "${#clear_id_lst[@]}" )); then
 
-		if ! (( "${lst_vgm[@]}" )); then
+		if ! (( "${#lst_vgm[@]}" )); then
 			echo "vgmfdb"
 		fi
 
@@ -507,7 +507,7 @@ fi
 }
 
 if [[ -n "$get_current_tags" ]] \
-&& (( "${lst_vgm[@]}" )) \
+&& (( "${#lst_vgm[@]}" )) \
 && [[ -z "$id_forced_remove" ]]; then
 
 	# Store IFS
