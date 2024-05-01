@@ -776,15 +776,30 @@ if [[ -n "$tag_forced_ftitle" ]]; then
 fi
 }
 tag_vgmfdb_nfo() {
+local tag_album_test
+local tag_artist_test
+local tag_system_test
+
 vgmfdb_nfo="${file%/*}/vgmfdb.nfo"
 
 if [[ -f "$vgmfdb_nfo" ]]; then
-	tag_album=$(< "$vgmfdb_nfo" grep "album=" \
+	tag_album_test=$(< "$vgmfdb_nfo" grep "album=" \
 					| cut -d'=' -f2-)
-	tag_artist=$(< "$vgmfdb_nfo" grep "artist=" \
+	tag_artist_test=$(< "$vgmfdb_nfo" grep "artist=" \
 					| cut -d'=' -f2-)
-	tag_system=$(< "$vgmfdb_nfo" grep "system=" \
+	tag_system_test=$(< "$vgmfdb_nfo" grep "system=" \
 					| cut -d'=' -f2-)
+
+	if [[ -n "$tag_album_test" ]]; then
+		tag_album="$tag_album_test"
+	fi
+	if [[ -n "$tag_artist_test" ]]; then
+		tag_artist="$tag_artist_test"
+	fi
+	if [[ -n "$tag_system_test" ]]; then
+		tag_system="$tag_system_test"
+	fi
+
 fi
 }
 tag_openmpt() {
