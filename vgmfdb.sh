@@ -779,18 +779,12 @@ tag_vgmfdb_nfo() {
 vgmfdb_nfo="${file%/*}/vgmfdb.nfo"
 
 if [[ -f "$vgmfdb_nfo" ]]; then
-	if [[ -z "$tag_album" ]]; then
-		tag_album=$(< "$vgmfdb_nfo" grep "album=" \
-						| cut -d'=' -f2-)
-	fi
-	if [[ -z "$tag_artist" ]]; then
-		tag_artist=$(< "$vgmfdb_nfo" grep "artist=" \
-						| cut -d'=' -f2-)
-	fi
-	if [[ -z "$tag_system" ]]; then
-		tag_system=$(< "$vgmfdb_nfo" grep "system=" \
-						| cut -d'=' -f2-)
-	fi
+	tag_album=$(< "$vgmfdb_nfo" grep "album=" \
+					| cut -d'=' -f2-)
+	tag_artist=$(< "$vgmfdb_nfo" grep "artist=" \
+					| cut -d'=' -f2-)
+	tag_system=$(< "$vgmfdb_nfo" grep "system=" \
+					| cut -d'=' -f2-)
 fi
 }
 tag_openmpt() {
