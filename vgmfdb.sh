@@ -635,6 +635,14 @@ if [[ -z "$tag_system" ]]; then
 	elif [[ "${file##*.}" = "mid" ]]; then
 		tag_system="MIDI"
 
+	# MIDI-like
+	elif [[ "${file##*.}" = "hmi" ]]; then
+		tag_system="Human Machine Interfaces MIDI"
+	elif [[ "${file##*.}" = "hmp" ]]; then
+		tag_system="Human Machine Interfaces MIDI P"
+	elif [[ "${file##*.}" = "xmi" ]]; then
+		tag_system="Extended Multiple Instrument Digital Interface"
+
 	# s98
 	elif [[ "${file##*.}" = "s98" ]]; then
 		tag_system="PC-Engine / TurboGrafx-16"
@@ -1390,7 +1398,7 @@ ext_sap="sap"
 ext_spc="spc"
 ext_tracker_openmpt="it|mod|mo3|mptm|s3m|stm|stp|plm|umx|xm"
 ext_tracker_uade="aam|abk|ahx|amc|aon|ast|bss|bp|bp3|cm|cus|dm|dm2|dmu|dss|dw|ea|ex|gmc|hot|fc13|fc14|med|mug|np3|okt|pru2|rk|s7g|sfx|smus|soc|p4x|tiny|tw"
-ext_various="ay|ams|dmf|dtt|hvl|mdx|mid|rmt|s98|sap|v2m|vt2|vtx|xrns|ym"
+ext_various="ay|ams|dmf|dtt|hmi|hmp|hvl|mdx|mid|rmt|s98|sap|v2m|vt2|vtx|xmi|xrns|ym"
 ext_vgm="vgm|vgz"
 ext_vgmstream_0_c="22k|8svx|acb|acm|ad|ads|adp|adpcm|adx|aix|akb|asf|apc|at3|at9|awb|bcstm|bcwav|bfstm|bfwav|bik|brstm|bwav|cfn|ckd|cmp|csb|csmp|cps"
 ext_vgmstream_d_n="dsm|dsp|dvi|fsb|gcm|genh|h4m|hca|hps|ifs|imc|int|isd|ivs|kma|ks|kvs|lac3|lbin|lmp3|logg|lopus|lstm|lwav|mab|mca|mic|msf|mus|musx|nlsd|nop|npsf"

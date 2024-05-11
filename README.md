@@ -65,7 +65,7 @@ system=Amiga
 * Nintendo SNES/Super Famicom:
 	* `spc`
 * Various machine:
-	* `ay|ams|dmf|dtt|hvl|mdx|mid|rmt|sap|v2m|vt2|vtx|xrns|ym`
+	* `ay|ams|dmf|dtt|hmi|hmp|hvl|mdx|mid|rmt|s98|sap|v2m|vt2|vtx|xmi|xrns|ym`
 * Various machine (vgmplay supported files):
 	* `vgm|vgz`
 * Various machine (vgmstream supported files):
