@@ -611,8 +611,8 @@ if [[ -z "$tag_system" ]]; then
 		tag_system="LucasArts AdLib Module"
 	elif [[ "${file##*.}" = "ksm" ]]; then
 		tag_system="Ken's AdLib"
-	elif [[ "${file##*.}" = "m" ]]; then
-		tag_system="Ultima 6"
+	elif [[ "${file##*.}" = "m" ]] || [[ "${file##*.}" = "tm" ]]; then
+		tag_system="M Format"
 	elif [[ "${file##*.}" = "mdi" ]]; then
 		tag_system="AdLib MIDIPlay Format"
 	elif [[ "${file##*.}" = "mtk" ]]; then
@@ -1391,7 +1391,7 @@ while [[ $# -gt 0 ]]; do
 	shift
 done
 
-ext_adlib="adl|amd|bam|cff|cmf|d00|dfm|ddt|dmo|dtm|got|hsc|hsq|imf|laa|ksm|m|mdi|mtk|rad|rol|sdb|sqx|wlf|xms|xsm"
+ext_adlib="adl|amd|bam|cff|cmf|d00|dfm|ddt|dmo|dtm|got|hsc|hsq|imf|laa|ksm|m|mdi|mtk|rad|rol|sdb|sqx|tm|wlf|xms|xsm"
 ext_c64="sid|prg"
 ext_sc68="sc68|snd|sndh"
 ext_sap="sap"

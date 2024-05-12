@@ -53,7 +53,7 @@ system=Amiga
 
 ## Supported Files
 * AdLib
-	* `adl|amd|bam|cff|cmf|d00|dfm|ddt|dmo|dtm|got|hsc|hsq|imf|laa|ksm|m|mdi|mtk|rad|rol|sdb|sqx|wlf|xms|xsm`
+	* `adl|amd|bam|cff|cmf|d00|dfm|ddt|dmo|dtm|got|hsc|hsq|imf|laa|ksm|m|mdi|mtk|rad|rol|sdb|sqx|tm|wlf|xms|xsm`
 * Atari 8-bits
 	* `sap`
 * Atari ST & Amiga
