@@ -61,7 +61,7 @@ system=Amiga
 * Commodore
 	* `sid|prg`
 * Sony PS1, PS2; Sega Saturn, Dreamcast; Nintendo 64, DS, GBA:
-	* `2sf|gsf|dsf|psf|psf2|mini2sf|minigsf|minipsf|minipsf2|minissf|miniusf|minincsf|ncsf|ssf|usf`
+	* `2sf|gsf|dsf|psf|psf2|mini2sf|minidsf|minigsf|minipsf|minipsf2|minissf|miniusf|minincsf|ncsf|ssf|usf`
 * Nintendo SNES/Super Famicom:
 	* `spc`
 * Various machine:

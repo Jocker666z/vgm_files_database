@@ -742,7 +742,7 @@ if [[ -z "$tag_system" ]]; then
 		tag_system="Nintendo GBA"
 	elif [[ "${file##*.}" = "usf" || "${file##*.}" = "miniusf" ]]; then
 		tag_system="Nintendo 64"
-	elif [[ "${file##*.}" = "dsf" ]]; then
+	elif [[ "${file##*.}" = "dsf" || "${file##*.}" = "minidsf" ]]; then
 		tag_system="Sega Dreamcast"
 
 	elif [[ "${file##*.}" = "ym" ]]; then
@@ -1425,7 +1425,7 @@ ext_vgmstream_d_n="dsp|dvi|fsb|gcm|genh|h4m|hca|hps|ifs|imc|int|isd|ivs|kma|ks|k
 ext_vgmstream_o_z="ogv|oma|ras|rsd|rsnd|rws|sad|sap|scd|sfx|sgd|snd|ss2|str|strm|stx|svag|p04|p08|p16|pcm|psb|thp|trk|trs|txtp|ulw|vag|vas|vds|vgmstream|vig|voi|way|wem|xa|xai|xma|xmd|xnb|xwv"
 ext_vgmstream="${ext_vgmstream_0_c}|${ext_vgmstream_d_n}|${ext_vgmstream_o_z}"
 ext_xmp="669|amf|dbm|digi|dsym|far|gz|mdl|musx|psm"
-ext_xsf="2sf|dsf|gsf|psf|psf2|mini2sf|minigsf|minipsf|minipsf2|minissf|miniusf|minincsf|ncsf|ssf|usf"
+ext_xsf="2sf|dsf|gsf|psf|psf2|mini2sf|minidsf|minigsf|minipsf|minipsf2|minissf|miniusf|minincsf|ncsf|ssf|usf"
 ext_zx_spectrum="asc|psc|pt1|pt2|pt3|sqt|stc|stp|tap|zxs"
 ext_all_raw="${ext_adlib}| \
 			 ${ext_c64}| \
