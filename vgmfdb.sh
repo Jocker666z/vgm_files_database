@@ -849,10 +849,10 @@ if echo "|${ext_tracker_openmpt}|" | grep -i "|${ext}|" &>/dev/null \
 		"$openmpt123_bin" --info "$file" \
 			> "$temp_cache_tags"
 
-		tag_title=$(< "$temp_cache_tags" grep "Title." \
+		tag_title=$(< "$temp_cache_tags" grep "Title......:" \
 					| awk -F'.: ' '{print $NF}' \
 					| awk '{$1=$1};1')
-		tag_artist=$(< "$temp_cache_tags" grep "Artist." \
+		tag_artist=$(< "$temp_cache_tags" grep "Artist.....:" \
 					| awk -F'.: ' '{print $NF}' \
 					| awk '{$1=$1};1')
 		tag_system=$(< "$temp_cache_tags" grep "Tracker....:" \
