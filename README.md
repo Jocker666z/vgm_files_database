@@ -69,7 +69,7 @@ system=Amiga
 * Various machine (vgmplay supported files):
 	* `vgm|vgz`
 * Various machine (vgmstream supported files):
-	* `22k|8svx|aax|acb|acm|ads|adp|adpcm|ad|adx|aix|akb|asf|apc|at3|at9|awb|bcstm|bcwav|bfstm|bfwav|bigrp|bik|brstm|bwav|cfn|ckd|csa|csb|cmp|csmp|cps|dsp|dvi|fsb|gcm|genh|h4m|hca|hps|ifs|imc|int|isd|ivs|kma|ks|kvs|lac3|lasf|lbin|lmp3|logg|lopus|lrmh|lstm|lwav|mab|mca|mic|msf|mus|musx|nlsd|nop|npsf|ogv|oma|ras|rsd|rsnd|rws|sad|sap|scd|sfx|sgd|snd|ss2|str|strm|stx|svag|sxd|p04|p08|p16|pcm|psb|thp|trk|trs|txtp|ulw|vag|var|vas|vds|vgmstream|vig|voi|vxn|way|wem|xa|xai|xma|xmd|xnb|xvag|xwb|xwma|xwv`
+	* `22k|8svx|aax|acb|acm|ads|adp|adpcm|ad|adx|aix|akb|asf|apc|at3|at9|awb|bcstm|bcwav|bfstm|bfwav|bigrp|bik|brstm|bwav|cfn|ckd|csa|csb|cmp|csmp|cps|dsp|dvi|fsb|gcm|genh|h4m|hca|hps|ifs|imc|int|isd|ivs|kma|ks|kvs|lac3|lasf|lbin|lmp3|logg|lopus|lrmh|lst|lstm|lwav|mab|mca|mic|msf|mus|musx|nlsd|nop|npsf|ogv|oma|ras|rcs|rsd|rsnd|rws|sad|sap|scd|sfx|sgd|snd|ss2|str|strm|stx|svag|sxd|p04|p08|p16|pcm|psb|thp|trk|trs|txtp|ulw|vag|var|vas|vds|vgmstream|vig|voi|vxn|way|wem|xa|xai|xma|xmd|xnb|xvag|xwb|xwma|xwv`
 * Tracker (openmpt supported files):
 	* `it|dsm|mod|mo3|mptm|s3m|stm|stp|plm|umx|xm`
 * Tracker (uade supported files):
